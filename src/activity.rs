@@ -19,22 +19,25 @@ impl Activity {
     /// # Arguments
     /// * `dialog` - If true, creates a dialog-style window; if false, creates a full-screen activity
     pub fn new(dialog: bool) -> Result<Self> {
+        eprintln!("[DEBUG] Activity::new() - creating connection...");
         let mut conn = Connection::new()?;
         
+        eprintln!("[DEBUG] Activity::new() - sending newActivity...");
         let response = conn.send_read(&json!({
             "method": "newActivity",
             "params": {
                 "dialog": dialog,
-                "canceloutside": !dialog,
-                "pip": false,
-                "overlay": false
+                "canceloutside": !dialog
             }
         }))?;
         
-        let aid = response["result"]["aid"]
+        eprintln!("[DEBUG] Activity::new() - got response: {:?}", response);
+        // Response is an array, aid is at index 0
+        let aid = response[0]
             .as_i64()
             .ok_or_else(|| crate::error::GuiError::InvalidResponse("Missing aid".to_string()))?;
         
+        eprintln!("[DEBUG] Activity::new() - aid = {}", aid);
         Ok(Activity { conn, aid })
     }
     

@@ -77,8 +77,12 @@ pub fn read_message(stream: &mut UnixStream) -> Result<Value> {
 
 /// Send a message and read the response
 pub fn send_and_read(stream: &mut UnixStream, msg: &Value) -> Result<Value> {
+    eprintln!("[DEBUG] send_and_read: sending...");
     send_message(stream, msg)?;
-    read_message(stream)
+    eprintln!("[DEBUG] send_and_read: reading response...");
+    let response = read_message(stream)?;
+    eprintln!("[DEBUG] send_and_read: got response!");
+    Ok(response)
 }
 
 /// Connection to Termux GUI service
@@ -90,12 +94,15 @@ pub struct Connection {
 impl Connection {
     /// Create a new connection to Termux GUI service
     pub fn new() -> Result<Self> {
+        eprintln!("[DEBUG] Generating addresses...");
         let addr_main = generate_random_address();
         let addr_event = generate_random_address();
         
+        eprintln!("[DEBUG] Binding sockets...");
         let main_listener = bind_abstract_socket(&addr_main)?;
         let event_listener = bind_abstract_socket(&addr_event)?;
         
+        eprintln!("[DEBUG] Sending broadcast...");
         // Try termux-am first, fall back to am
         let output = Command::new("termux-am")
             .args(&[
@@ -113,6 +120,7 @@ impl Connection {
         
         match output {
             Ok(out) if !out.status.success() => {
+                eprintln!("[DEBUG] termux-am failed, trying am...");
                 Command::new("am")
                     .args(&[
                         "broadcast",
@@ -129,6 +137,7 @@ impl Connection {
                     .map_err(|_| GuiError::ConnectionFailed)?;
             }
             Err(_) => {
+                eprintln!("[DEBUG] termux-am not found, trying am...");
                 Command::new("am")
                     .args(&[
                         "broadcast",
@@ -147,13 +156,16 @@ impl Connection {
             _ => {}
         }
         
+        eprintln!("[DEBUG] Accepting connections...");
         let (mut main_stream, _) = main_listener.accept()?;
         let (event_stream, _) = event_listener.accept()?;
         
+        eprintln!("[DEBUG] Handshake...");
         // Protocol handshake
         main_stream.write_all(&[0x01])?;
         main_stream.read_exact(&mut [0u8; 1])?;
         
+        eprintln!("[DEBUG] Connection established!");
         Ok(Connection {
             main_stream,
             event_stream,

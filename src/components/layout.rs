@@ -26,9 +26,9 @@ impl LinearLayout {
             }
         }))?;
         
-        let id = response["result"]["id"]
+        let id = response
             .as_i64()
-            .ok_or_else(|| crate::error::GuiError::InvalidResponse("Missing id".to_string()))?;
+            .ok_or_else(|| crate::error::GuiError::InvalidResponse("Invalid id".to_string()))?;
         
         Ok(LinearLayout {
             view: View::new(id),
@@ -69,9 +69,9 @@ impl NestedScrollView {
             }
         }))?;
         
-        let id = response["result"]["id"]
+        let id = response
             .as_i64()
-            .ok_or_else(|| crate::error::GuiError::InvalidResponse("Missing id".to_string()))?;
+            .ok_or_else(|| crate::error::GuiError::InvalidResponse("Invalid id".to_string()))?;
         
         Ok(NestedScrollView {
             view: View::new(id),

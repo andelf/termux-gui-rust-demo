@@ -24,9 +24,9 @@ impl Spinner {
             }
         }))?;
         
-        let id = response["result"]["id"]
+        let id = response
             .as_i64()
-            .ok_or_else(|| crate::error::GuiError::InvalidResponse("Missing id".to_string()))?;
+            .ok_or_else(|| crate::error::GuiError::InvalidResponse("Invalid id".to_string()))?;
         
         Ok(Spinner {
             view: View::new(id),

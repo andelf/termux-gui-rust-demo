@@ -61,3 +61,11 @@ path = "examples/test_spinner_debug.rs"
 [[example]]
 name = "test_spinner_fullscreen"
 path = "examples/test_spinner_fullscreen.rs"
+
+[[example]]
+name = "button_demo_v2"
+path = "examples/button_demo_v2.rs"
+
+[[example]]
+name = "test_lib_minimal"
+path = "examples/test_lib_minimal.rs"
