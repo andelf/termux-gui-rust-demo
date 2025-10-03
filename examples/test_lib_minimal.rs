@@ -1,5 +1,7 @@
 // 最小测试 - 测试库的基本功能
 use termux_gui::{Activity, Result};
+use std::thread;
+use std::time::Duration;
 
 fn main() -> Result<()> {
     println!("Step 1: Creating activity...");
@@ -11,7 +13,7 @@ fn main() -> Result<()> {
     println!("Step 4: Layout created! ID = {}", layout.id());
     
     println!("Step 5: Creating text view...");
-    let text = activity.create_text_view("Hello", Some(layout.id()))?;
+    let text = activity.create_text_view("Hello from Termux GUI!", Some(layout.id()))?;
     println!("Step 6: Text view created! ID = {}", text.id());
     
     println!("Step 7: Setting text size...");
@@ -19,8 +21,10 @@ fn main() -> Result<()> {
     println!("Step 8: Text size set!");
     
     println!("All steps completed successfully!");
+    println!("Waiting 5 seconds to show the UI...");
     
-    // Don't start event loop, just finish
+    thread::sleep(Duration::from_secs(5));
+    
     println!("Finishing activity...");
     activity.finish()?;
     println!("Done!");

@@ -47,7 +47,7 @@ impl TextView {
     
     /// Set the text content
     pub fn set_text(&self, activity: &mut Activity, text: &str) -> Result<()> {
-        activity.send_read(&json!({
+        activity.send(&json!({
             "method": "setText",
             "params": {
                 "aid": self.aid,
@@ -60,7 +60,7 @@ impl TextView {
     
     /// Set text size
     pub fn set_text_size(&self, activity: &mut Activity, size: i32) -> Result<()> {
-        activity.send_read(&json!({
+        activity.send(&json!({
             "method": "setTextSize",
             "params": {
                 "aid": self.aid,
@@ -73,7 +73,7 @@ impl TextView {
     
     /// Set text color (ARGB format)
     pub fn set_text_color(&self, activity: &mut Activity, color: i32) -> Result<()> {
-        activity.send_read(&json!({
+        activity.send(&json!({
             "method": "setTextColor",
             "params": {
                 "aid": self.aid,

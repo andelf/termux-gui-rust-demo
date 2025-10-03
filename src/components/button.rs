@@ -47,7 +47,7 @@ impl Button {
     
     /// Set the button text
     pub fn set_text(&self, activity: &mut Activity, text: &str) -> Result<()> {
-        activity.send_read(&json!({
+        activity.send(&json!({
             "method": "setText",
             "params": {
                 "aid": self.aid,
