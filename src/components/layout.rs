@@ -1,0 +1,91 @@
+//! Layout components
+
+use serde_json::json;
+use crate::activity::Activity;
+use crate::view::View;
+use crate::error::Result;
+
+/// A LinearLayout arranges views linearly
+pub struct LinearLayout {
+    view: View,
+    #[allow(dead_code)]
+    aid: i64,
+}
+
+impl LinearLayout {
+    /// Create a new LinearLayout
+    pub fn new(activity: &mut Activity, parent: Option<i64>) -> Result<Self> {
+        let parent_id = parent.unwrap_or(activity.id());
+        
+        let response = activity.send_read(&json!({
+            "method": "createLinearLayout",
+            "params": {
+                "aid": activity.id(),
+                "parent": parent_id,
+                "vertical": true
+            }
+        }))?;
+        
+        let id = response["result"]["id"]
+            .as_i64()
+            .ok_or_else(|| crate::error::GuiError::InvalidResponse("Missing id".to_string()))?;
+        
+        Ok(LinearLayout {
+            view: View::new(id),
+            aid: activity.id(),
+        })
+    }
+    
+    /// Get the view ID
+    pub fn id(&self) -> i64 {
+        self.view.id()
+    }
+    
+    /// Get the underlying View
+    pub fn view(&self) -> &View {
+        &self.view
+    }
+}
+
+/// A NestedScrollView provides scrolling capability
+pub struct NestedScrollView {
+    view: View,
+    #[allow(dead_code)]
+    aid: i64,
+}
+
+impl NestedScrollView {
+    /// Create a new NestedScrollView
+    pub fn new(activity: &mut Activity, parent: Option<i64>) -> Result<Self> {
+        let parent_id = parent.unwrap_or(activity.id());
+        
+        let response = activity.send_read(&json!({
+            "method": "createNestedScrollView",
+            "params": {
+                "aid": activity.id(),
+                "parent": parent_id,
+                "nobar": false,
+                "snapping": false
+            }
+        }))?;
+        
+        let id = response["result"]["id"]
+            .as_i64()
+            .ok_or_else(|| crate::error::GuiError::InvalidResponse("Missing id".to_string()))?;
+        
+        Ok(NestedScrollView {
+            view: View::new(id),
+            aid: activity.id(),
+        })
+    }
+    
+    /// Get the view ID
+    pub fn id(&self) -> i64 {
+        self.view.id()
+    }
+    
+    /// Get the underlying View
+    pub fn view(&self) -> &View {
+        &self.view
+    }
+}
