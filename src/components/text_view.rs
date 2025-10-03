@@ -14,15 +14,19 @@ pub struct TextView {
 impl TextView {
     /// Create a new TextView
     pub fn new(activity: &mut Activity, text: &str, parent: Option<i64>) -> Result<Self> {
-        let parent_id = parent.unwrap_or(activity.id());
+        let mut params = json!({
+            "aid": activity.id(),
+            "text": text
+        });
+        
+        // Only set parent if explicitly provided
+        if let Some(parent_id) = parent {
+            params["parent"] = json!(parent_id);
+        }
         
         let response = activity.send_read(&json!({
             "method": "createTextView",
-            "params": {
-                "aid": activity.id(),
-                "parent": parent_id,
-                "text": text
-            }
+            "params": params
         }))?;
         
         let id = response

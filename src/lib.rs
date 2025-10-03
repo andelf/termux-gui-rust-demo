@@ -63,7 +63,7 @@ pub mod error;
 // Re-exports for convenience
 pub use connection::Connection;
 pub use activity::Activity;
-pub use view::View;
+pub use view::{View, MATCH_PARENT, WRAP_CONTENT};
 pub use error::{GuiError, Result};
 
 // Re-export all components

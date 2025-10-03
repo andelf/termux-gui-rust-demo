@@ -23,15 +23,19 @@ impl LinearLayout {
     /// # Arguments
     /// * `vertical` - If true, arranges children vertically; if false, horizontally
     pub fn new_with_orientation(activity: &mut Activity, parent: Option<i64>, vertical: bool) -> Result<Self> {
-        let parent_id = parent.unwrap_or(activity.id());
+        let mut params = json!({
+            "aid": activity.id(),
+            "vertical": vertical
+        });
+        
+        // Only set parent if explicitly provided
+        if let Some(parent_id) = parent {
+            params["parent"] = json!(parent_id);
+        }
         
         let response = activity.send_read(&json!({
             "method": "createLinearLayout",
-            "params": {
-                "aid": activity.id(),
-                "parent": parent_id,
-                "vertical": vertical
-            }
+            "params": params
         }))?;
         
         let id = response
@@ -65,16 +69,20 @@ pub struct NestedScrollView {
 impl NestedScrollView {
     /// Create a new NestedScrollView
     pub fn new(activity: &mut Activity, parent: Option<i64>) -> Result<Self> {
-        let parent_id = parent.unwrap_or(activity.id());
+        let mut params = json!({
+            "aid": activity.id(),
+            "nobar": false,
+            "snapping": false
+        });
+        
+        // Only set parent if explicitly provided
+        if let Some(parent_id) = parent {
+            params["parent"] = json!(parent_id);
+        }
         
         let response = activity.send_read(&json!({
             "method": "createNestedScrollView",
-            "params": {
-                "aid": activity.id(),
-                "parent": parent_id,
-                "nobar": false,
-                "snapping": false
-            }
+            "params": params
         }))?;
         
         let id = response

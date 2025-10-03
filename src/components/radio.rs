@@ -14,15 +14,19 @@ pub struct RadioButton {
 impl RadioButton {
     /// Create a new RadioButton
     pub fn new(activity: &mut Activity, text: &str, parent: Option<i64>) -> Result<Self> {
-        let parent_id = parent.unwrap_or(activity.id());
+        let mut params = json!({
+            "aid": activity.id(),
+            "text": text
+        });
+        
+        // Only set parent if explicitly provided
+        if let Some(parent_id) = parent {
+            params["parent"] = json!(parent_id);
+        }
         
         let response = activity.send_read(&json!({
             "method": "createRadioButton",
-            "params": {
-                "aid": activity.id(),
-                "parent": parent_id,
-                "text": text
-            }
+            "params": params
         }))?;
         
         let id = response
@@ -82,14 +86,18 @@ pub struct RadioGroup {
 impl RadioGroup {
     /// Create a new RadioGroup
     pub fn new(activity: &mut Activity, parent: Option<i64>) -> Result<Self> {
-        let parent_id = parent.unwrap_or(activity.id());
+        let mut params = json!({
+            "aid": activity.id()
+        });
+        
+        // Only set parent if explicitly provided
+        if let Some(parent_id) = parent {
+            params["parent"] = json!(parent_id);
+        }
         
         let response = activity.send_read(&json!({
             "method": "createRadioGroup",
-            "params": {
-                "aid": activity.id(),
-                "parent": parent_id
-            }
+            "params": params
         }))?;
         
         let id = response
