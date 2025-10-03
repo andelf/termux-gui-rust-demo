@@ -26,7 +26,7 @@ fn main() -> Result<()> {
     counter.view().set_margin(&mut activity, 20)?;
     
     // 创建按钮布局（横向）
-    let button_layout = activity.create_linear_layout(Some(layout.id()))?;
+    let button_layout = activity.create_linear_layout_horizontal(Some(layout.id()))?;
     
     // 创建按钮
     let inc_button = activity.create_button("➕ 增加", Some(button_layout.id()))?;

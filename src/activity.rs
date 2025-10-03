@@ -66,6 +66,11 @@ impl Activity {
         LinearLayout::new(self, parent)
     }
     
+    /// Create a LinearLayout with specified orientation
+    pub fn create_linear_layout_horizontal(&mut self, parent: Option<i64>) -> Result<LinearLayout> {
+        LinearLayout::new_with_orientation(self, parent, false)
+    }
+    
     /// Create a NestedScrollView
     pub fn create_nested_scroll_view(&mut self, parent: Option<i64>) -> Result<NestedScrollView> {
         NestedScrollView::new(self, parent)

@@ -13,8 +13,16 @@ pub struct LinearLayout {
 }
 
 impl LinearLayout {
-    /// Create a new LinearLayout
+    /// Create a new vertical LinearLayout
     pub fn new(activity: &mut Activity, parent: Option<i64>) -> Result<Self> {
+        Self::new_with_orientation(activity, parent, true)
+    }
+    
+    /// Create a new LinearLayout with specified orientation
+    /// 
+    /// # Arguments
+    /// * `vertical` - If true, arranges children vertically; if false, horizontally
+    pub fn new_with_orientation(activity: &mut Activity, parent: Option<i64>, vertical: bool) -> Result<Self> {
         let parent_id = parent.unwrap_or(activity.id());
         
         let response = activity.send_read(&json!({
@@ -22,7 +30,7 @@ impl LinearLayout {
             "params": {
                 "aid": activity.id(),
                 "parent": parent_id,
-                "vertical": true
+                "vertical": vertical
             }
         }))?;
         
