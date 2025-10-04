@@ -111,6 +111,11 @@ impl Activity {
         Switch::new(self, text, parent)
     }
     
+    /// Create a Switch with specified checked state
+    pub fn create_switch_checked(&mut self, text: &str, parent: Option<i64>, checked: bool) -> Result<Switch> {
+        Switch::new_with_checked(self, text, parent, checked)
+    }
+    
     /// Create a RadioButton
     pub fn create_radio_button(&mut self, text: &str, parent: Option<i64>) -> Result<RadioButton> {
         RadioButton::new(self, text, parent)
