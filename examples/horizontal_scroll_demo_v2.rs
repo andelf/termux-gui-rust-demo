@@ -56,6 +56,7 @@ fn main() -> Result<()> {
     let mut buttons = Vec::new();
     for label in &button_labels {
         let btn = activity.create_button(label, Some(h_layout1.id()))?;
+        btn.view().set_width(&mut activity, 180)?;  // 设置固定宽度
         btn.view().set_margin(&mut activity, 5)?;
         buttons.push(btn);
     }
@@ -148,6 +149,7 @@ fn main() -> Result<()> {
     let mut number_buttons = Vec::new();
     for i in 0..20 {
         let btn = activity.create_button(&format!("{}", i * 5), Some(h_layout3.id()))?;
+        btn.view().set_width(&mut activity, 120)?;  // 设置固定宽度
         btn.view().set_margin(&mut activity, 5)?;
         number_buttons.push(btn);
     }
