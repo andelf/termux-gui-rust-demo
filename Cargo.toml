@@ -18,21 +18,19 @@ rand = "0.8"
 libc = "0.2"
 thiserror = "1.0"
 
+# === 旧版示例 (使用原始 API，待迁移) ===
+
 [[example]]
 name = "button_demo"
 path = "examples/button_demo.rs"
 
 [[example]]
-name = "input_demo"
-path = "examples/input_demo.rs"
-
-[[example]]
-name = "test_events"
-path = "examples/test_events.rs"
-
-[[example]]
 name = "checkbox_demo"
 path = "examples/checkbox_demo.rs"
+
+[[example]]
+name = "input_demo"
+path = "examples/input_demo.rs"
 
 [[example]]
 name = "switch_demo"
@@ -47,25 +45,11 @@ name = "spinner_demo"
 path = "examples/spinner_demo.rs"
 
 [[example]]
-name = "test_minimal_spinner"
-path = "examples/test_minimal_spinner.rs"
+name = "test_events"
+path = "examples/test_events.rs"
 
-[[example]]
-name = "test_spinner_simple"
-path = "examples/test_spinner_simple.rs"
-
-[[example]]
-name = "test_spinner_debug"
-path = "examples/test_spinner_debug.rs"
-
-[[example]]
-name = "test_spinner_fullscreen"
-path = "examples/test_spinner_fullscreen.rs"
+# === 新版示例 (使用新库 API) ===
 
 [[example]]
 name = "button_demo_v2"
 path = "examples/button_demo_v2.rs"
-
-[[example]]
-name = "test_lib_minimal"
-path = "examples/test_lib_minimal.rs"
