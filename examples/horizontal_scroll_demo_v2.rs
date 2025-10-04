@@ -46,6 +46,7 @@ fn main() -> Result<()> {
     // 在 HorizontalScrollView 内创建水平 LinearLayout
     let h_layout1 = activity.create_linear_layout_horizontal(Some(h_scroll1.id()))?;
     h_layout1.view().set_height_wrap_content(&mut activity)?;
+    h_layout1.view().set_width_wrap_content(&mut activity)?;  // 关键：宽度设为wrap_content让内容可以超出屏幕
     
     // 添加10个按钮
     let button_labels = [
@@ -82,6 +83,7 @@ fn main() -> Result<()> {
     // 水平布局容器
     let h_layout2 = activity.create_linear_layout_horizontal(Some(h_scroll2.id()))?;
     h_layout2.view().set_height_wrap_content(&mut activity)?;
+    h_layout2.view().set_width_wrap_content(&mut activity)?;  // 关键：宽度设为wrap_content
     
     // 添加5个"卡片"（垂直布局模拟卡片）
     let card_emojis = ["🌟", "🎨", "🎭", "🎪", "🎯"];
@@ -140,6 +142,7 @@ fn main() -> Result<()> {
     // 水平布局容器
     let h_layout3 = activity.create_linear_layout_horizontal(Some(h_scroll3.id()))?;
     h_layout3.view().set_height_wrap_content(&mut activity)?;
+    h_layout3.view().set_width_wrap_content(&mut activity)?;  // 关键：宽度设为wrap_content
     
     // 添加20个数字
     let mut number_buttons = Vec::new();
