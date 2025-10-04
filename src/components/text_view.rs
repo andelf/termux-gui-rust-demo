@@ -64,6 +64,19 @@ impl TextView {
         Ok(())
     }
     
+    /// Get the current text content
+    pub fn get_text(&self, activity: &mut Activity) -> Result<String> {
+        let response = activity.send_read(&json!({
+            "method": "getText",
+            "params": {
+                "aid": self.aid,
+                "id": self.view.id()
+            }
+        }))?;
+        
+        Ok(response.as_str().unwrap_or("").to_string())
+    }
+    
     /// Set text size
     pub fn set_text_size(&self, activity: &mut Activity, size: i32) -> Result<()> {
         activity.send(&json!({

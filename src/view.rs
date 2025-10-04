@@ -185,6 +185,35 @@ impl View {
         Ok(())
     }
     
+    /// Set GridLayout parameters for this view
+    /// 
+    /// # Arguments
+    /// * `row` - Row index (0-based)
+    /// * `col` - Column index (0-based)
+    /// * `row_size` - Number of rows this view spans (default 1)
+    /// * `col_size` - Number of columns this view spans (default 1)
+    /// * `alignment_row` - Vertical alignment: "top", "bottom", "center", "baseline", "fill"
+    /// * `alignment_col` - Horizontal alignment: "left", "right", "center", "fill"
+    pub fn set_grid_layout_params(&self, activity: &mut Activity, 
+                                   row: i32, col: i32,
+                                   row_size: i32, col_size: i32,
+                                   alignment_row: &str, alignment_col: &str) -> Result<()> {
+        activity.send(&json!({
+            "method": "setGridLayoutParams",
+            "params": {
+                "aid": activity.id(),
+                "id": self.id,
+                "row": row,
+                "col": col,
+                "rowsize": row_size,
+                "colsize": col_size,
+                "alignmentrow": alignment_row,
+                "alignmentcol": alignment_col
+            }
+        }))?;
+        Ok(())
+    }
+    
     /// Get the dimensions (width, height) of this view in pixels
     /// Returns (width, height)
     pub fn get_dimensions(&self, activity: &mut Activity) -> Result<(i32, i32)> {
@@ -204,5 +233,37 @@ impl View {
         } else {
             Ok((0, 0))
         }
+    }
+    
+    /// Set the background color of this view
+    /// 
+    /// Color format: 0xAARRGGBB (alpha, red, green, blue in hexadecimal)
+    /// 
+    /// # Examples
+    /// 
+    /// ```rust,no_run
+    /// # use termux_gui::{Activity, Result};
+    /// # fn example(activity: &mut Activity, view_id: i64) -> Result<()> {
+    /// // Solid red
+    /// view.set_background_color(activity, 0xFFFF0000u32 as i32)?;
+    /// 
+    /// // Semi-transparent blue
+    /// view.set_background_color(activity, 0x800000FFu32 as i32)?;
+    /// 
+    /// // White
+    /// view.set_background_color(activity, 0xFFFFFFFFu32 as i32)?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub fn set_background_color(&self, activity: &mut Activity, color: i32) -> Result<()> {
+        activity.send(&json!({
+            "method": "setBackgroundColor",
+            "params": {
+                "aid": activity.id(),
+                "id": self.id,
+                "color": color
+            }
+        }))?;
+        Ok(())
     }
 }
