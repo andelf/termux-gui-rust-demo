@@ -181,6 +181,11 @@ impl Activity {
         SwipeRefreshLayout::new(self, parent)
     }
     
+    /// Create a TabLayout
+    pub fn create_tab_layout(&mut self, parent: Option<i64>) -> Result<TabLayout> {
+        TabLayout::new(self, parent)
+    }
+    
     /// Set the Activity title
     pub fn set_title(&mut self, title: &str) -> Result<()> {
         self.send(&json!({

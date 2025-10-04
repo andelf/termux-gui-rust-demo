@@ -317,3 +317,93 @@ impl SwipeRefreshLayout {
         Ok(())
     }
 }
+
+/// A TabLayout displays a horizontal row of tabs
+/// 
+/// TabLayout is useful for creating tabbed interfaces. It emits 'itemselected' 
+/// events when a tab is clicked, with the tab index as the value.
+pub struct TabLayout {
+    view: View,
+    aid: i64,
+}
+
+impl TabLayout {
+    /// Create a new TabLayout
+    pub fn new(activity: &mut Activity, parent: Option<i64>) -> Result<Self> {
+        let mut params = json!({
+            "aid": activity.id()
+        });
+        
+        // Only set parent if explicitly provided
+        if let Some(parent_id) = parent {
+            params["parent"] = json!(parent_id);
+        }
+        
+        let response = activity.send_read(&json!({
+            "method": "createTabLayout",
+            "params": params
+        }))?;
+        
+        let id = response
+            .as_i64()
+            .ok_or_else(|| crate::error::GuiError::InvalidResponse("Invalid id".to_string()))?;
+        
+        Ok(TabLayout {
+            view: View::new(id),
+            aid: activity.id(),
+        })
+    }
+    
+    /// Get the view ID
+    pub fn id(&self) -> i64 {
+        self.view.id()
+    }
+    
+    /// Get the underlying View
+    pub fn view(&self) -> &View {
+        &self.view
+    }
+    
+    /// Set the list of tab labels
+    /// 
+    /// # Arguments
+    /// * `tabs` - A slice of strings representing the tab labels
+    /// 
+    /// # Example
+    /// ```no_run
+    /// tab_layout.set_list(activity, &["Page 1", "Page 2", "Page 3"])?;
+    /// ```
+    pub fn set_list(&self, activity: &mut Activity, tabs: &[&str]) -> Result<()> {
+        activity.send(&json!({
+            "method": "setList",
+            "params": {
+                "aid": self.aid,
+                "id": self.view.id(),
+                "list": tabs
+            }
+        }))?;
+        Ok(())
+    }
+    
+    /// Programmatically select a tab
+    /// 
+    /// # Arguments
+    /// * `index` - The zero-based index of the tab to select
+    /// 
+    /// # Example
+    /// ```no_run
+    /// // Select the second tab (index 1)
+    /// tab_layout.select_tab(activity, 1)?;
+    /// ```
+    pub fn select_tab(&self, activity: &mut Activity, index: usize) -> Result<()> {
+        activity.send(&json!({
+            "method": "selectTab",
+            "params": {
+                "aid": self.aid,
+                "id": self.view.id(),
+                "tab": index
+            }
+        }))?;
+        Ok(())
+    }
+}
