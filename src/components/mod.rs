@@ -11,6 +11,7 @@ mod layout;
 mod image_view;
 mod progress_bar;
 mod toggle_button;
+mod space;
 
 pub use text_view::TextView;
 pub use button::Button;
@@ -23,3 +24,4 @@ pub use layout::{LinearLayout, NestedScrollView};
 pub use image_view::ImageView;
 pub use progress_bar::ProgressBar;
 pub use toggle_button::ToggleButton;
+pub use space::Space;

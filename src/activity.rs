@@ -156,6 +156,11 @@ impl Activity {
         ToggleButton::new_with_checked(self, text, parent, checked)
     }
     
+    /// Create a Space (empty space for layout)
+    pub fn create_space(&mut self, parent: Option<i64>) -> Result<Space> {
+        Space::new(self, parent)
+    }
+    
     /// Set the Activity title
     pub fn set_title(&mut self, title: &str) -> Result<()> {
         self.send(&json!({
