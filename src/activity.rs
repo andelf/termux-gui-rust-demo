@@ -166,6 +166,11 @@ impl Activity {
         FrameLayout::new(self, parent)
     }
     
+    /// Create a GridLayout with specified rows and columns
+    pub fn create_grid_layout(&mut self, rows: i32, cols: i32, parent: Option<i64>) -> Result<GridLayout> {
+        GridLayout::new(self, rows, cols, parent)
+    }
+    
     /// Set the Activity title
     pub fn set_title(&mut self, title: &str) -> Result<()> {
         self.send(&json!({

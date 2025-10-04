@@ -20,7 +20,7 @@ pub use checkbox::Checkbox;
 pub use switch::Switch;
 pub use radio::{RadioButton, RadioGroup};
 pub use spinner::Spinner;
-pub use layout::{LinearLayout, NestedScrollView, FrameLayout};
+pub use layout::{LinearLayout, NestedScrollView, FrameLayout, GridLayout};
 pub use image_view::ImageView;
 pub use progress_bar::ProgressBar;
 pub use toggle_button::ToggleButton;
