@@ -1,231 +1,333 @@
 # 下一步行动计划
 
-## 📅 更新时间: 2025-01-04
+## 📅 更新时间: 2025-01-04 (最新)
 
-## ✅ 当前状态
+## ✅ 当前状态 - 里程碑达成！
 
-### 重构进度
+### 核心库完成度
 - ✅ 核心库创建完成 (src/lib.rs, src/activity.rs, src/connection.rs, src/view.rs)
-- ✅ 所有组件封装完成 (8个组件)
-- ✅ 关键Bug修复 (send() vs send_read())
+- ✅ 8个基础组件封装完成并优化
+- ✅ 所有send/send_read问题修复
 - ✅ 布局参数支持 (WRAP_CONTENT, MATCH_PARENT, weight)
-- ✅ 示例代码量减少50%+
+- ✅ 所有6个核心demo迁移完成！
 
-### 当前问题
-- ⚠️ button_demo_v2 界面显示不完整（只看到文本，没有按钮）
-- ⚠️ spinner_demo 级联更新不工作（原有问题）
-- ⚠️ 太多测试版本文件需要清理
+### 已完成的Demo (v2版本)
+- ✅ button_demo_v2 - 按钮交互演示
+- ✅ checkbox_demo_v2 - 复选框多选演示
+- ✅ input_demo_v2 - 文本输入演示
+- ✅ switch_demo_v2 - 开关切换演示
+- ✅ radio_demo_v2 - 单选按钮演示
+- ✅ spinner_demo_v2 - 下拉列表演示（含级联选择）
 
----
-
-## 🎯 立即行动 (今天)
-
-### 1. 验证新库示例 ⬅️ **当前任务**
-
-#### 步骤A: 运行并检查输出
-```bash
-cd ~/termux-gui-rust-demo
-
-# 运行新库示例
-./target/release/examples/button_demo_v2
-
-# 或重新编译运行
-cargo run --example button_demo_v2 --release
-```
-
-#### 预期行为
-- ✅ 应该看到一个对话框
-- ✅ 标题: "计数器演示 🦀"
-- ✅ 计数器: "点击次数: 0"
-- ✅ 三个按钮: "➕ 增加", "➖ 减少", "🔄 重置"
-
-#### 如果问题依然存在
-检查终端输出的调试信息：
-```
-[DEBUG] Activity::new() - creating connection...
-[DEBUG] Generating addresses...
-[DEBUG] Binding sockets...
-[DEBUG] Sending broadcast...
-[DEBUG] Accepting connections...
-[DEBUG] Handshake...
-[DEBUG] Connection established!
-[DEBUG] Activity::new() - sending newActivity...
-[DEBUG] send_and_read: sending...
-[DEBUG] send_and_read: reading response...
-[DEBUG] send_and_read: got response!
-...
-```
-
-看看在哪个组件创建后停止输出。
-
-#### 步骤B: 对比旧版本
-```bash
-# 运行旧版本（工作正常）
-./target/release/examples/button_demo
-```
-
-如果旧版本正常，新版本不正常，说明库封装有问题。
+### 已实现的组件
+1. **TextView** - 文本显示
+2. **Button** - 按钮
+3. **EditText** - 文本输入（单行/多行）
+4. **Checkbox** - 复选框
+5. **Switch** - 开关
+6. **RadioButton** - 单选按钮
+7. **RadioGroup** - 单选组
+8. **Spinner** - 下拉列表
+9. **LinearLayout** - 线性布局（垂直/水平）
+10. **NestedScrollView** - 嵌套滚动视图
 
 ---
 
-### 2. 诊断和修复
+## 🎯 下一阶段目标
 
-#### 可能原因1: 按钮创建卡住
-如果输出在 "创建按钮" 时停止，可能是：
-- Button::new() 内部的 send_read() 没有收到响应
-- 检查 button.rs 的实现
+### 阶段一：补充缺失的基础组件（优先级：高）
 
-#### 可能原因2: 布局参数设置卡住
-如果输出在布局设置时停止，可能是：
-- set_linear_layout_params() 调用问题
-- 尝试注释掉所有布局参数设置，只保留基础创建
+从Python框架对比，我们还缺少以下常用组件：
 
-#### 可能原因3: 事件循环问题
-如果界面出现但没有控件，可能是：
-- 组件创建了但没有正确添加到布局
-- 检查 parent 参数是否正确传递
+#### 1. ImageView - 图像显示 ⭐⭐⭐⭐⭐
+- **用途**: 显示图片（PNG、JPEG等）
+- **Python实现**: ✅ 已有
+- **方法**: setimage(), setbuffer()
+- **优先级**: 非常高，图片显示是基础功能
+
+#### 2. ProgressBar - 进度条 ⭐⭐⭐⭐
+- **用途**: 显示加载/进度状态
+- **Python实现**: ✅ 已有
+- **方法**: setprogress()
+- **优先级**: 高，用户体验必需
+
+#### 3. ToggleButton - 切换按钮 ⭐⭐⭐
+- **用途**: 类似Switch，但样式不同
+- **Python实现**: ✅ 已有
+- **继承自**: CompoundButton
+
+#### 4. Space - 空白间隔 ⭐⭐⭐
+- **用途**: 在布局中添加空白空间
+- **Python实现**: ✅ 已有
+- **优先级**: 中，布局辅助工具
+
+#### 5. FrameLayout - 帧布局 ⭐⭐⭐⭐
+- **用途**: 简单的层叠布局
+- **Python实现**: ✅ 已有
+- **优先级**: 高，基础布局组件
+
+#### 6. GridLayout - 网格布局 ⭐⭐⭐
+- **用途**: 网格排列组件
+- **Python实现**: ✅ 已有
+
+#### 7. HorizontalScrollView - 水平滚动视图 ⭐⭐
+- **用途**: 水平滚动容器
+- **Python实现**: ✅ 已有
+
+#### 8. TabLayout - 标签页布局 ⭐⭐⭐⭐
+- **用途**: 多标签页界面
+- **Python实现**: ✅ 已有
+- **优先级**: 高，现代应用常用
+
+#### 9. SwipeRefreshLayout - 下拉刷新 ⭐⭐⭐
+- **用途**: 下拉刷新功能
+- **Python实现**: ✅ 已有
+
+#### 10. WebView - 网页视图 ⭐⭐⭐⭐⭐
+- **用途**: 显示网页内容
+- **Python实现**: ✅ 已有
+- **方法**: loadurl(), evaluatejs(), etc.
+- **优先级**: 非常高，功能强大
 
 ---
 
-### 3. 临时解决方案: 创建最小示例
+## 📋 实施计划
 
-如果问题难以定位，创建一个最最简单的版本：
+### 本周任务（Week 1）
+
+#### Day 1: ImageView + ProgressBar
+- [ ] 创建 `src/components/image_view.rs`
+- [ ] 实现 ImageView::new(), set_image()
+- [ ] 创建 `src/components/progress_bar.rs`
+- [ ] 实现 ProgressBar::new(), set_progress()
+- [ ] 添加 Activity 便捷方法
+- [ ] 创建演示程序
+
+#### Day 2: FrameLayout + Space
+- [ ] 创建 `src/components/frame_layout.rs`
+- [ ] 创建 `src/components/space.rs`
+- [ ] 添加 Activity 便捷方法
+- [ ] 创建演示程序
+
+#### Day 3: ToggleButton
+- [ ] 创建 `src/components/toggle_button.rs`
+- [ ] 实现类似 Switch 的功能
+- [ ] 创建演示程序
+
+#### Day 4-5: TabLayout（复杂）
+- [ ] 研究 Python TabLayout 实现
+- [ ] 创建 `src/components/tab_layout.rs`
+- [ ] 实现标签页切换逻辑
+- [ ] 创建演示程序
+
+### 下周任务（Week 2）
+
+#### 高级组件
+- [ ] GridLayout
+- [ ] WebView（最复杂，需要特别注意）
+- [ ] HorizontalScrollView
+- [ ] SwipeRefreshLayout
+
+---
+
+## 🚀 快速开始
+
+### 查看 Python 实现参考
 
 ```bash
-nano examples/button_demo_minimal.rs
+# ImageView
+cat ~/Documents/termux-gui-python-bindings/src/termuxgui/imageview.py
+
+# ProgressBar
+cat ~/Documents/termux-gui-python-bindings/src/termuxgui/progressbar.py
+
+# ToggleButton
+cat ~/Documents/termux-gui-python-bindings/src/termuxgui/togglebutton.py
+
+# 查看所有组件
+ls ~/Documents/termux-gui-python-bindings/src/termuxgui/*.py
 ```
+
+### ImageView 组件模板
 
 ```rust
-use termux_gui::{Activity, Result};
-use termux_gui::connection::read_message;
+//! ImageView component
 
-fn main() -> Result<()> {
-    println!("=== 最小 Button 示例 ===\n");
-    
-    let mut activity = Activity::new(true)?;
-    println!("✓ Activity 创建");
-    
-    let layout = activity.create_linear_layout(None)?;
-    println!("✓ Layout 创建: {}", layout.id());
-    
-    let text = activity.create_text_view("Hello", Some(layout.id()))?;
-    println!("✓ TextView 创建: {}", text.id());
-    
-    let button = activity.create_button("点我", Some(layout.id()))?;
-    println!("✓ Button 创建: {}", button.id());
-    
-    println!("\n等待事件...\n");
-    
-    loop {
-        let event = read_message(activity.event_stream())?;
-        println!("[事件] {:?}", event);
+use serde_json::json;
+use crate::activity::Activity;
+use crate::view::View;
+use crate::error::Result;
+
+/// An ImageView displays images
+pub struct ImageView {
+    view: View,
+    aid: i64,
+}
+
+impl ImageView {
+    /// Create a new ImageView
+    pub fn new(activity: &mut Activity, parent: Option<i64>) -> Result<Self> {
+        let mut params = json!({
+            "aid": activity.id()
+        });
         
-        if event["type"] == "destroy" {
-            break;
+        if let Some(parent_id) = parent {
+            params["parent"] = json!(parent_id);
         }
         
-        if event["type"] == "click" {
-            let id = event["value"]["id"].as_i64().unwrap_or(-1);
-            if id == button.id() {
-                text.set_text(&mut activity, "已点击!")?;
-            }
-        }
+        let response = activity.send_read(&json!({
+            "method": "createImageView",
+            "params": params
+        }))?;
+        
+        let id = response
+            .as_i64()
+            .ok_or_else(|| crate::error::GuiError::InvalidResponse("Invalid id".to_string()))?;
+        
+        Ok(ImageView {
+            view: View::new(id),
+            aid: activity.id(),
+        })
     }
     
-    Ok(())
+    pub fn id(&self) -> i64 {
+        self.view.id()
+    }
+    
+    pub fn view(&self) -> &View {
+        &self.view
+    }
+    
+    /// Set image from base64 encoded string
+    pub fn set_image(&self, activity: &mut Activity, img_base64: &str) -> Result<()> {
+        activity.send(&json!({
+            "method": "setImage",
+            "params": {
+                "aid": self.aid,
+                "id": self.view.id(),
+                "img": img_base64
+            }
+        }))?;
+        Ok(())
+    }
 }
 ```
 
-编译并运行：
-```bash
-cargo build --example button_demo_minimal --release
-./target/release/examples/button_demo_minimal
+---
+
+## 💡 开发规范提醒
+
+### 组件开发 Checklist
+- [ ] 创建组件文件 `src/components/xxx.rs`
+- [ ] 实现 `new()` 构造函数（使用 send_read）
+- [ ] 实现必要的 set 方法（使用 send）
+- [ ] 实现必要的 get 方法（使用 send_read）
+- [ ] 提供 `id()` 和 `view()` 访问方法
+- [ ] 在 `src/components/mod.rs` 中导出
+- [ ] 在 `src/activity.rs` 中添加便捷方法
+- [ ] 创建演示程序 `examples/xxx_demo_v2.rs`
+- [ ] 测试并修复问题
+- [ ] Git commit 记录
+
+### 代码规则（重要！）
+
+```rust
+// ✅ 创建控件 → send_read()
+let response = activity.send_read(&json!({
+    "method": "createXXX",
+    "params": params
+}))?;
+
+// ✅ 设置属性 → send()
+activity.send(&json!({
+    "method": "setXXX",
+    "params": params
+}))?;
+
+// ✅ 获取属性 → send_read()
+let response = activity.send_read(&json!({
+    "method": "getXXX",
+    "params": params
+}))?;
+```
+
+### 退出处理模式
+
+```rust
+match event_type {
+    "destroy" => {
+        println!("\n✓ Activity 已关闭");
+        return Ok(());
+    },
+    // ... 其他事件
+}
 ```
 
 ---
 
-## 📝 今天的目标
+## 📚 相关文档
 
-1. ✅ 编译通过 (已完成)
-2. ⏳ 在设备上验证 button_demo_v2
-3. ⏳ 找出界面不完整的原因
-4. ⏳ 修复问题或创建最小可用示例
-5. ⏳ Git commit 记录修复
+### 已有文档
+- ✅ **MIGRATION_COMPLETE.md** - 迁移完成总结
+- ✅ **COMPONENT_FIX_SUMMARY.md** - 组件修复详情
+- ✅ **FIX_SEND_READ_ISSUE.md** - send/send_read问题
 
----
-
-## 📋 本周计划
-
-### 第1天 (今天)
-- [x] 编译新库示例
-- [ ] 验证功能
-- [ ] 诊断和修复问题
-- [ ] Git commit
-
-### 第2天
-- [ ] 清理测试文件
-- [ ] 迁移 checkbox_demo_v2
-- [ ] 迁移 input_demo_v2
-
-### 第3天
-- [ ] 迁移 switch_demo_v2
-- [ ] 迁移 radio_demo_v2
-
-### 第4天
-- [ ] 迁移 spinner_demo_v2
-- [ ] 修复 spinner 级联更新问题
-
-### 第5天
-- [ ] 删除旧示例
-- [ ] 更新文档
-- [ ] 完整测试所有示例
+### 待更新文档
+- [ ] README.md - 添加新组件说明
+- [ ] 组件完整列表和使用示例
+- [ ] API 参考文档
 
 ---
 
-## 🚀 下一步命令
+## 🎯 本周目标
 
-```bash
-# 1. 运行测试
-./target/release/examples/button_demo_v2
+### 必须完成
+1. ✅ 所有6个demo迁移完成（已完成！）
+2. ⏳ 实现 ImageView 组件
+3. ⏳ 实现 ProgressBar 组件
+4. ⏳ 创建对应的演示程序
 
-# 2. 如果有问题，创建最小示例
-nano examples/button_demo_minimal.rs
-# (复制上面的代码)
+### 期望完成
+5. ⏳ 实现 FrameLayout 组件
+6. ⏳ 实现 Space 组件
+7. ⏳ 实现 ToggleButton 组件
 
-# 3. 编译测试
-cargo build --example button_demo_minimal --release
-./target/release/examples/button_demo_minimal
-
-# 4. 记录结果
-echo "测试结果: ..." >> TEST_RESULTS.txt
-
-# 5. Commit
-git add .
-git commit -m "test: 验证新库示例功能"
-```
+### 加分项
+8. ⏳ 开始 TabLayout 研究
+9. ⏳ 创建组件使用手册
+10. ⏳ 准备 0.3.0 版本发布
 
 ---
 
-## 💡 调试技巧
+## 🎉 当前成就
 
-1. **增加调试输出**
-   在每个组件创建后添加 `println!`
-
-2. **对比Python实现**
-   ```bash
-   python3 ~/Documents/termux-gui-python-bindings/examples/button.py
-   ```
-   确认是否是底层协议问题
-
-3. **检查Java日志**
-   ```bash
-   logcat | grep -i termux
-   ```
-   查看GUI插件的日志
-
-4. **分步创建**
-   一个组件一个组件地创建，找出卡住的位置
+- ✅ 核心库架构完成
+- ✅ 10个基础组件实现
+- ✅ 6个完整演示程序
+- ✅ 代码量减少52%
+- ✅ 所有已知bug修复
+- ✅ 开发规范建立
+- ✅ 重要里程碑达成！
 
 ---
 
-**开始吧！** 🦀
+## 📊 组件完成度
+
+### 已完成 (10/30+)
+- TextView, Button, EditText
+- Checkbox, Switch, RadioButton, RadioGroup
+- Spinner, LinearLayout, NestedScrollView
+
+### 进行中 (0/30+)
+- 等待开始...
+
+### 待实现 (20/30+)
+- ImageView, ProgressBar, ToggleButton
+- Space, FrameLayout, GridLayout
+- TabLayout, WebView
+- HorizontalScrollView, SwipeRefreshLayout
+- 等等...
+
+---
+
+**继续加油！下一个目标是补充常用组件！** 🦀✨
