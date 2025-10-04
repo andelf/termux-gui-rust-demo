@@ -53,3 +53,7 @@ path = "examples/test_events.rs"
 [[example]]
 name = "button_demo_v2"
 path = "examples/button_demo_v2.rs"
+
+[[example]]
+name = "checkbox_demo_v2"
+path = "examples/checkbox_demo_v2.rs"

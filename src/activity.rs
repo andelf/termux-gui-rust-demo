@@ -96,6 +96,11 @@ impl Activity {
         Checkbox::new(self, text, parent)
     }
     
+    /// Create a Checkbox with initial checked state
+    pub fn create_checkbox_checked(&mut self, text: &str, parent: Option<i64>, checked: bool) -> Result<Checkbox> {
+        Checkbox::new_with_checked(self, text, parent, checked)
+    }
+    
     /// Create a Switch
     pub fn create_switch(&mut self, text: &str, parent: Option<i64>) -> Result<Switch> {
         Switch::new(self, text, parent)

@@ -12,11 +12,17 @@ pub struct Checkbox {
 }
 
 impl Checkbox {
-    /// Create a new Checkbox
+    /// Create a new Checkbox with optional initial checked state
     pub fn new(activity: &mut Activity, text: &str, parent: Option<i64>) -> Result<Self> {
+        Self::new_with_checked(activity, text, parent, false)
+    }
+    
+    /// Create a new Checkbox with specified checked state
+    pub fn new_with_checked(activity: &mut Activity, text: &str, parent: Option<i64>, checked: bool) -> Result<Self> {
         let mut params = json!({
             "aid": activity.id(),
-            "text": text
+            "text": text,
+            "checked": checked
         });
         
         // Only set parent if explicitly provided
