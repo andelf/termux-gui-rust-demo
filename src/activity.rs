@@ -91,6 +91,11 @@ impl Activity {
         EditText::new(self, text, parent)
     }
     
+    /// Create a multi-line EditText
+    pub fn create_edit_text_multiline(&mut self, text: &str, parent: Option<i64>) -> Result<EditText> {
+        EditText::new_multiline(self, text, parent)
+    }
+    
     /// Create a Checkbox
     pub fn create_checkbox(&mut self, text: &str, parent: Option<i64>) -> Result<Checkbox> {
         Checkbox::new(self, text, parent)
