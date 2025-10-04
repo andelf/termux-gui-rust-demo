@@ -186,6 +186,11 @@ impl Activity {
         TabLayout::new(self, parent)
     }
     
+    /// Create a WebView
+    pub fn create_web_view(&mut self, parent: Option<i64>) -> Result<WebView> {
+        WebView::new(self, parent)
+    }
+    
     /// Set the Activity title
     pub fn set_title(&mut self, title: &str) -> Result<()> {
         self.send(&json!({

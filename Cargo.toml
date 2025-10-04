@@ -57,3 +57,60 @@ path = "examples/button_demo_v2.rs"
 [[example]]
 name = "checkbox_demo_v2"
 path = "examples/checkbox_demo_v2.rs"
+
+[[example]]
+name = "input_demo_v2"
+path = "examples/input_demo_v2.rs"
+
+[[example]]
+name = "switch_demo_v2"
+path = "examples/switch_demo_v2.rs"
+
+[[example]]
+name = "radio_demo_v2"
+path = "examples/radio_demo_v2.rs"
+
+[[example]]
+name = "spinner_demo_v2"
+path = "examples/spinner_demo_v2.rs"
+
+[[example]]
+name = "image_demo_v2"
+path = "examples/image_demo_v2.rs"
+
+[[example]]
+name = "progress_demo_v2"
+path = "examples/progress_demo_v2.rs"
+
+[[example]]
+name = "toggle_demo_v2"
+path = "examples/toggle_demo_v2.rs"
+
+[[example]]
+name = "space_demo_v2"
+path = "examples/space_demo_v2.rs"
+
+[[example]]
+name = "frame_layout_demo_v2"
+path = "examples/frame_layout_demo_v2.rs"
+
+[[example]]
+name = "grid_layout_demo_v2"
+path = "examples/grid_layout_demo_v2.rs"
+
+[[example]]
+name = "horizontal_scroll_demo_v2"
+path = "examples/horizontal_scroll_demo_v2.rs"
+
+[[example]]
+name = "swipe_refresh_demo_v2"
+path = "examples/swipe_refresh_demo_v2.rs"
+
+[[example]]
+name = "tab_layout_demo_v2"
+path = "examples/tab_layout_demo_v2.rs"
+
+[[example]]
+name = "webview_demo_v2"
+path = "examples/webview_demo_v2.rs"
+

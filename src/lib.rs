@@ -70,5 +70,7 @@ pub use error::{GuiError, Result};
 pub use components::{
     TextView, Button, EditText, Checkbox, Switch,
     RadioButton, RadioGroup, Spinner,
-    LinearLayout, NestedScrollView,
+    LinearLayout, NestedScrollView, FrameLayout, GridLayout,
+    HorizontalScrollView, SwipeRefreshLayout, TabLayout,
+    ImageView, ProgressBar, ToggleButton, Space, WebView,
 };
