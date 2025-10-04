@@ -171,6 +171,11 @@ impl Activity {
         GridLayout::new(self, rows, cols, parent)
     }
     
+    /// Create a HorizontalScrollView
+    pub fn create_horizontal_scroll_view(&mut self, parent: Option<i64>) -> Result<HorizontalScrollView> {
+        HorizontalScrollView::new(self, parent)
+    }
+    
     /// Set the Activity title
     pub fn set_title(&mut self, title: &str) -> Result<()> {
         self.send(&json!({

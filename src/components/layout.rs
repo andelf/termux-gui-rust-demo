@@ -210,3 +210,51 @@ impl GridLayout {
         &self.view
     }
 }
+
+/// A HorizontalScrollView provides horizontal scrolling capability
+pub struct HorizontalScrollView {
+    view: View,
+    #[allow(dead_code)]
+    aid: i64,
+}
+
+impl HorizontalScrollView {
+    /// Create a new HorizontalScrollView
+    pub fn new(activity: &mut Activity, parent: Option<i64>) -> Result<Self> {
+        let mut params = json!({
+            "aid": activity.id(),
+            "nobar": false,
+            "snapping": false,
+            "fillviewport": false
+        });
+        
+        // Only set parent if explicitly provided
+        if let Some(parent_id) = parent {
+            params["parent"] = json!(parent_id);
+        }
+        
+        let response = activity.send_read(&json!({
+            "method": "createHorizontalScrollView",
+            "params": params
+        }))?;
+        
+        let id = response
+            .as_i64()
+            .ok_or_else(|| crate::error::GuiError::InvalidResponse("Invalid id".to_string()))?;
+        
+        Ok(HorizontalScrollView {
+            view: View::new(id),
+            aid: activity.id(),
+        })
+    }
+    
+    /// Get the view ID
+    pub fn id(&self) -> i64 {
+        self.view.id()
+    }
+    
+    /// Get the underlying View
+    pub fn view(&self) -> &View {
+        &self.view
+    }
+}
