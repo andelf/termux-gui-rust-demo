@@ -106,6 +106,7 @@ fn main() -> Result<()> {
                 // Activity 已被系统销毁，直接退出即可
                 // 不要调用 activity.finish()，因为 Activity 已经不存在了
                 println!("\n✓ Activity 已关闭");
+                println!("✓ 程序结束");
                 return Ok(());
             },
             "click" => {
