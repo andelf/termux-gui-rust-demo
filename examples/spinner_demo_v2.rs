@@ -38,7 +38,6 @@ fn main() -> Result<()> {
     brand_spinner.view().set_height_wrap_content(&mut activity)?;
     brand_spinner.view().set_linear_layout_params(&mut activity, 0, None)?;
     brand_spinner.set_list(&mut activity, &brands)?;
-    brand_spinner.refresh(&mut activity)?;
     
     // ========== 型号选择 ==========
     let model_label = activity.create_text_view("选择型号:", Some(layout.id()))?;
@@ -52,7 +51,6 @@ fn main() -> Result<()> {
     model_spinner.view().set_height_wrap_content(&mut activity)?;
     model_spinner.view().set_linear_layout_params(&mut activity, 0, None)?;
     model_spinner.set_list(&mut activity, &["请先选择品牌"])?;
-    model_spinner.refresh(&mut activity)?;
     
     // ========== 容量选择 ==========
     let storage_label = activity.create_text_view("选择容量:", Some(layout.id()))?;
@@ -67,7 +65,6 @@ fn main() -> Result<()> {
     storage_spinner.view().set_height_wrap_content(&mut activity)?;
     storage_spinner.view().set_linear_layout_params(&mut activity, 0, None)?;
     storage_spinner.set_list(&mut activity, &storages)?;
-    storage_spinner.refresh(&mut activity)?;
     
     // ========== 颜色选择 ==========
     let color_label = activity.create_text_view("选择颜色:", Some(layout.id()))?;
@@ -82,7 +79,6 @@ fn main() -> Result<()> {
     color_spinner.view().set_height_wrap_content(&mut activity)?;
     color_spinner.view().set_linear_layout_params(&mut activity, 0, None)?;
     color_spinner.set_list(&mut activity, &colors)?;
-    color_spinner.refresh(&mut activity)?;
     
     // ========== 结果显示 ==========
     let result = activity.create_text_view("请完成选择", Some(layout.id()))?;
@@ -157,17 +153,17 @@ fn main() -> Result<()> {
             },
             "itemselected" => {
                 let view_id = event_value["id"].as_i64().unwrap_or(-1);
-                let index = event_value["index"].as_i64().unwrap_or(0) as usize;
+                // IMPORTANT: "selected" field contains the selected TEXT, not index!
+                let selected_text = event_value["selected"].as_str().unwrap_or("");
                 
                 if view_id == brand_spinner.id() {
-                    // 品牌选择
-                    if index > 0 && index < brands.len() {
-                        let brand = brands[index];
-                        brand_selection = brand.to_string();
-                        println!("📱 品牌: {}", brand);
+                    // 品牌选择 - 使用字符串匹配而不是索引
+                    if selected_text != "请选择" && !selected_text.is_empty() {
+                        brand_selection = selected_text.to_string();
+                        println!("📱 品牌: {}", selected_text);
                         
                         // 根据品牌更新型号列表
-                        let models: Vec<&str> = match brand {
+                        let models: Vec<&str> = match selected_text {
                             "Apple" => vec!["请选择", "iPhone 15 Pro Max", "iPhone 15 Pro", "iPhone 15", "iPhone 14"],
                             "Samsung" => vec!["请选择", "Galaxy S24 Ultra", "Galaxy S24+", "Galaxy S24", "Galaxy Z Fold5"],
                             "Huawei" => vec!["请选择", "Mate 60 Pro", "Mate 60", "P60 Pro", "P60"],
@@ -179,49 +175,35 @@ fn main() -> Result<()> {
                         
                         // 更新型号 Spinner
                         model_spinner.set_list(&mut activity, &models)?;
-                        model_spinner.refresh(&mut activity)?;
                         
                         // 重置型号选择
                         model_selection.clear();
                     } else {
                         brand_selection.clear();
+                        model_spinner.set_list(&mut activity, &["请先选择品牌"])?;
+                        model_selection.clear();
                     }
                 } else if view_id == model_spinner.id() {
-                    // 型号选择
-                    if index > 0 {
-                        let models_list: Vec<&str> = match brand_selection.as_str() {
-                            "Apple" => vec!["", "iPhone 15 Pro Max", "iPhone 15 Pro", "iPhone 15", "iPhone 14"],
-                            "Samsung" => vec!["", "Galaxy S24 Ultra", "Galaxy S24+", "Galaxy S24", "Galaxy Z Fold5"],
-                            "Huawei" => vec!["", "Mate 60 Pro", "Mate 60", "P60 Pro", "P60"],
-                            "Xiaomi" => vec!["", "14 Ultra", "14 Pro", "14", "13T Pro"],
-                            "OPPO" => vec!["", "Find X7 Ultra", "Find X7", "Reno 11 Pro", "Reno 11"],
-                            "Vivo" => vec!["", "X100 Pro", "X100", "S18 Pro", "S18"],
-                            _ => vec![""],
-                        };
-                        
-                        if index < models_list.len() {
-                            let model = models_list[index];
-                            model_selection = model.to_string();
-                            println!("📱 型号: {}", model);
-                        }
+                    // 型号选择 - 使用字符串匹配
+                    if selected_text != "请选择" && selected_text != "请先选择品牌" && !selected_text.is_empty() {
+                        model_selection = selected_text.to_string();
+                        println!("📱 型号: {}", selected_text);
                     } else {
                         model_selection.clear();
                     }
                 } else if view_id == storage_spinner.id() {
-                    // 容量选择
-                    if index > 0 && index < storages.len() {
-                        let storage = storages[index];
-                        storage_selection = storage.to_string();
-                        println!("💾 容量: {}", storage);
+                    // 容量选择 - 使用字符串匹配
+                    if selected_text != "请选择" && !selected_text.is_empty() {
+                        storage_selection = selected_text.to_string();
+                        println!("💾 容量: {}", selected_text);
                     } else {
                         storage_selection.clear();
                     }
                 } else if view_id == color_spinner.id() {
-                    // 颜色选择
-                    if index > 0 && index < colors.len() {
-                        let color = colors[index];
-                        color_selection = color.to_string();
-                        println!("🎨 颜色: {}", color);
+                    // 颜色选择 - 使用字符串匹配
+                    if selected_text != "请选择" && !selected_text.is_empty() {
+                        color_selection = selected_text.to_string();
+                        println!("🎨 颜色: {}", selected_text);
                     } else {
                         color_selection.clear();
                     }
