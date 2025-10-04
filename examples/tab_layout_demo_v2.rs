@@ -1,127 +1,147 @@
-//! TabLayout 标签页演示 (新库版本)
+//! TabLayout demo using HorizontalScrollView (v2 version)
 //! 
-//! 展示如何使用 TabLayout 创建标签页界面
-//! 点击标签页切换内容显示
+//! Demonstrates how to create a tab layout interface with page switching.
+//! Uses HorizontalScrollView for smooth page transitions.
+//! 
+//! **Important**: Do NOT use visibility control for switching pages, as it doesn't
+//! work reliably in Termux:GUI. Always use HorizontalScrollView with scroll positioning.
 
 use termux_gui::{Activity, Result};
 use termux_gui::connection::read_message;
+use std::thread;
+use std::time::Duration;
 
 fn main() -> Result<()> {
-    println!("=== TabLayout 标签页演示 (新库版本) ===\n");
+    println!("=== TabLayout Demo (HorizontalScrollView approach) ===\n");
 
-    // 创建连接和 Activity
+    // Create Activity
     let mut activity = Activity::new(false)?;
-    println!("✓ 连接建立");
+    println!("✓ Connection established");
 
-    // 创建根布局（垂直）
+    // Create root layout (vertical)
     let root = activity.create_linear_layout(None)?;
     
-    // 创建 TabLayout（在顶部）
+    // Create TabLayout at the top
     let tabs = activity.create_tab_layout(Some(root.id()))?;
     tabs.view().set_linear_layout_params(&mut activity, 0, None)?;
-    tabs.view().set_height(&mut activity, -2)?; // WRAP_CONTENT
+    tabs.view().set_height_wrap_content(&mut activity)?;
     
-    // 设置标签列表
-    tabs.set_list(&mut activity, &["首页", "消息", "我的"])?;
+    // Set tab list
+    tabs.set_list(&mut activity, &["Home", "Messages", "Profile"])?;
     
-    // 创建内容区域
-    let content_area = activity.create_linear_layout(Some(root.id()))?;
-    content_area.view().set_linear_layout_params(&mut activity, 1, None)?; // weight=1 占据剩余空间
+    println!("TabLayout created");
     
-    // 创建三个页面的内容（初始全部隐藏）
-    // 页面1 - 首页
-    let page1 = activity.create_linear_layout(Some(content_area.id()))?;
+    // Create HorizontalScrollView for page content (no scrollbar, snapping, fill viewport)
+    let scroll_view = activity.create_horizontal_scroll_view_with_params(
+        Some(root.id()), 
+        true,   // fillviewport
+        true,   // snapping - snap to pages
+        true    // nobar - hide scrollbar
+    )?;
+    scroll_view.view().set_linear_layout_params(&mut activity, 1, None)?; // weight=1 to fill remaining space
     
-    let title1 = activity.create_text_view("📱 首页", Some(page1.id()))?;
+    // Wait for dimensions to be available
+    println!("Waiting for ScrollView dimensions...");
+    let mut page_width = 0;
+    for _ in 0..100 {
+        let dims = scroll_view.view().get_dimensions(&mut activity)?;
+        if dims.0 > 0 {
+            page_width = dims.0;
+            break;
+        }
+        thread::sleep(Duration::from_millis(10));
+    }
+    
+    if page_width == 0 {
+        println!("Error: Could not get page width");
+        return Ok(());
+    }
+    
+    println!("Page width: {} px", page_width);
+    
+    // Create horizontal layout inside ScrollView
+    let content_layout = activity.create_linear_layout_horizontal(Some(scroll_view.id()))?;
+    
+    // Create three pages, each with width = page_width (in pixels!)
+    // Page 1 - Home
+    let page1 = activity.create_linear_layout(Some(content_layout.id()))?;
+    page1.view().set_width_px(&mut activity, page_width)?;  // Must use pixels, not dp!
+    page1.view().set_height_match_parent(&mut activity)?;
+    
+    let title1 = activity.create_text_view("📱 Home", Some(page1.id()))?;
     title1.set_text_size(&mut activity, 28)?;
+    title1.view().set_height_wrap_content(&mut activity)?;
     
-    let content1 = activity.create_text_view("\n欢迎使用 TabLayout！\n\n这是首页内容。\n\n☝️ 点击顶部标签切换页面", Some(page1.id()))?;
+    let content1 = activity.create_text_view(
+        "\nWelcome to TabLayout!\n\nThis is the home page.\n\n☝️ Tap tabs to switch pages", 
+        Some(page1.id())
+    )?;
     content1.set_text_size(&mut activity, 18)?;
+    content1.view().set_height_wrap_content(&mut activity)?;
     
-    // 页面2 - 消息
-    let page2 = activity.create_linear_layout(Some(content_area.id()))?;
-    activity.send(&serde_json::json!({
-        "method": "setVisibility",
-        "params": {
-            "aid": activity.id(),
-            "id": page2.id(),
-            "vis": 8  // GONE initially
-        }
-    }))?;
+    // Page 2 - Messages
+    let page2 = activity.create_linear_layout(Some(content_layout.id()))?;
+    page2.view().set_width_px(&mut activity, page_width)?;
+    page2.view().set_height_match_parent(&mut activity)?;
     
-    let title2 = activity.create_text_view("💬 消息中心", Some(page2.id()))?;
+    let title2 = activity.create_text_view("💬 Messages", Some(page2.id()))?;
     title2.set_text_size(&mut activity, 28)?;
+    title2.view().set_height_wrap_content(&mut activity)?;
     
-    let content2 = activity.create_text_view("\n这是第二页\n\n你有 3 条新消息\n\n• 系统通知\n• 好友消息\n• 更新提醒", Some(page2.id()))?;
+    let content2 = activity.create_text_view(
+        "\nYou have 3 new messages\n\n• System notification\n• Friend message\n• Update reminder", 
+        Some(page2.id())
+    )?;
     content2.set_text_size(&mut activity, 18)?;
+    content2.view().set_height_wrap_content(&mut activity)?;
     
-    // 页面3 - 我的
-    let page3 = activity.create_linear_layout(Some(content_area.id()))?;
-    activity.send(&serde_json::json!({
-        "method": "setVisibility",
-        "params": {
-            "aid": activity.id(),
-            "id": page3.id(),
-            "vis": 8  // GONE initially
-        }
-    }))?;
+    // Page 3 - Profile
+    let page3 = activity.create_linear_layout(Some(content_layout.id()))?;
+    page3.view().set_width_px(&mut activity, page_width)?;
+    page3.view().set_height_match_parent(&mut activity)?;
     
-    let title3 = activity.create_text_view("👤 个人中心", Some(page3.id()))?;
+    let title3 = activity.create_text_view("👤 Profile", Some(page3.id()))?;
     title3.set_text_size(&mut activity, 28)?;
+    title3.view().set_height_wrap_content(&mut activity)?;
     
-    let content3 = activity.create_text_view("\n这是第三页\n\n个人信息\n\n• 账号设置\n• 隐私设置\n• 关于我们", Some(page3.id()))?;
+    let content3 = activity.create_text_view(
+        "\nProfile Information\n\n• Account settings\n• Privacy settings\n• About us", 
+        Some(page3.id())
+    )?;
     content3.set_text_size(&mut activity, 18)?;
+    content3.view().set_height_wrap_content(&mut activity)?;
     
-    println!("\n✓ 界面创建完成");
+    println!("\n✓ UI created");
     println!("\n━━━━━━━━━━━━━━━━━━━━━━");
-    println!("提示:");
-    println!("  • 点击顶部标签切换页面");
-    println!("  • 观察页面内容变化");
+    println!("Tips:");
+    println!("  • Tap tabs to switch pages");
+    println!("  • Pages scroll smoothly");
     println!("━━━━━━━━━━━━━━━━━━━━━━\n");
     
-    // 当前选中的标签页
-    let mut current_tab = 0;
-    let pages = [page1.id(), page2.id(), page3.id()];
-    
-    // 事件循环
+    // Event loop
     loop {
         let event = read_message(activity.event_stream())?;
         let event_type = event["type"].as_str().unwrap_or("");
+        let event_value = &event["value"];
         
         match event_type {
             "destroy" => {
-                println!("\n✓ Activity 已关闭");
+                println!("\n✓ Activity closed");
                 return Ok(());
             }
             "itemselected" => {
-                // TabLayout 被点击
-                if let Some(selected) = event["value"]["selected"].as_i64() {
-                    if event["value"]["id"].as_i64() == Some(tabs.id()) {
-                        let new_tab = selected as usize;
-                        if new_tab != current_tab && new_tab < 3 {
-                            println!("切换到标签 {}: {}", new_tab, ["首页", "消息", "我的"][new_tab]);
+                let view_id = event_value["id"].as_i64().unwrap_or(-1);
+                
+                if view_id == tabs.id() {
+                    if let Some(new_tab) = event_value["selected"].as_i64() {
+                        let new_tab = new_tab as i32;
+                        if new_tab >= 0 && new_tab < 3 {
+                            let scroll_x = page_width * new_tab;
+                            println!("Switch to tab {}: {} (scroll to {}px)", 
+                                    new_tab, ["Home", "Messages", "Profile"][new_tab as usize], scroll_x);
                             
-                            // 隐藏当前页面
-                            activity.send(&serde_json::json!({
-                                "method": "setVisibility",
-                                "params": {
-                                    "aid": activity.id(),
-                                    "id": pages[current_tab],
-                                    "vis": 8  // GONE
-                                }
-                            }))?;
-                            
-                            // 显示新页面
-                            activity.send(&serde_json::json!({
-                                "method": "setVisibility",
-                                "params": {
-                                    "aid": activity.id(),
-                                    "id": pages[new_tab],
-                                    "vis": 0  // VISIBLE
-                                }
-                            }))?;
-                            
-                            current_tab = new_tab;
+                            // Scroll to the corresponding page (x = page_width * tab_index)
+                            scroll_view.set_scroll_position(&mut activity, scroll_x, 0, true)?;
                         }
                     }
                 }

@@ -211,7 +211,38 @@ impl GridLayout {
     }
 }
 
-/// A HorizontalScrollView provides horizontal scrolling capability
+/// A HorizontalScrollView provides horizontal scrolling for content
+///
+/// ## Important Usage Notes for TabLayout
+///
+/// When using HorizontalScrollView with TabLayout for page switching:
+///
+/// 1. **Use pixel units**: Page widths must be set using `set_width_px()`, not `set_width()`
+/// 2. **Match dimensions**: Use `get_dimensions()` to get screen width, then set each page width to match
+/// 3. **Scroll position**: Calculate scroll position as `page_width * tab_index`
+///
+/// ### Example
+///
+/// ```rust,no_run
+/// # use termux_gui::{Activity, Result};
+/// # fn example(activity: &mut Activity, root_id: i64, content_id: i64) -> Result<()> {
+/// // Create HorizontalScrollView with snapping and no scrollbar
+/// let scroll = activity.create_horizontal_scroll_view_with_params(
+///     Some(root_id), true, true, true
+/// )?;
+///
+/// // Get width in pixels
+/// let (page_width, _) = scroll.view().get_dimensions(activity)?;
+///
+/// // Create pages with pixel-based width
+/// let page1 = activity.create_linear_layout(Some(content_id))?;
+/// page1.view().set_width_px(activity, page_width)?;  // Use px, not dp!
+///
+/// // Scroll to page 2
+/// scroll.set_scroll_position(activity, page_width * 2, 0, true)?;
+/// # Ok(())
+/// # }
+/// ```
 pub struct HorizontalScrollView {
     view: View,
     #[allow(dead_code)]
@@ -248,6 +279,35 @@ impl HorizontalScrollView {
         })
     }
     
+    /// Create a new HorizontalScrollView with custom parameters
+    pub fn new_with_params(activity: &mut Activity, parent: Option<i64>, 
+                          fillviewport: bool, snapping: bool, nobar: bool) -> Result<Self> {
+        let mut params = json!({
+            "aid": activity.id(),
+            "nobar": nobar,
+            "snapping": snapping,
+            "fillviewport": fillviewport
+        });
+        
+        if let Some(parent_id) = parent {
+            params["parent"] = json!(parent_id);
+        }
+        
+        let response = activity.send_read(&json!({
+            "method": "createHorizontalScrollView",
+            "params": params
+        }))?;
+        
+        let id = response
+            .as_i64()
+            .ok_or_else(|| crate::error::GuiError::InvalidResponse("Invalid id".to_string()))?;
+        
+        Ok(HorizontalScrollView {
+            view: View::new(id),
+            aid: activity.id(),
+        })
+    }
+    
     /// Get the view ID
     pub fn id(&self) -> i64 {
         self.view.id()
@@ -256,6 +316,46 @@ impl HorizontalScrollView {
     /// Get the underlying View
     pub fn view(&self) -> &View {
         &self.view
+    }
+    
+    /// Get the scroll position (x, y) in pixels
+    pub fn get_scroll_position(&self, activity: &mut Activity) -> Result<(i32, i32)> {
+        let response = activity.send_read(&json!({
+            "method": "getScrollPosition",
+            "params": {
+                "aid": self.aid,
+                "id": self.view.id()
+            }
+        }))?;
+        
+        // Response is an array [x, y]
+        if let Some(arr) = response.as_array() {
+            let x = arr.get(0).and_then(|v| v.as_i64()).unwrap_or(0) as i32;
+            let y = arr.get(1).and_then(|v| v.as_i64()).unwrap_or(0) as i32;
+            Ok((x, y))
+        } else {
+            Ok((0, 0))
+        }
+    }
+    
+    /// Set the scroll position
+    /// 
+    /// # Arguments
+    /// * `x` - Horizontal scroll position in pixels
+    /// * `y` - Vertical scroll position in pixels (usually 0 for HorizontalScrollView)
+    /// * `smooth` - Whether to scroll smoothly or jump immediately
+    pub fn set_scroll_position(&self, activity: &mut Activity, x: i32, y: i32, smooth: bool) -> Result<()> {
+        activity.send(&json!({
+            "method": "setScrollPosition",
+            "params": {
+                "aid": self.aid,
+                "id": self.view.id(),
+                "x": x,
+                "y": y,
+                "soft": smooth
+            }
+        }))?;
+        Ok(())
     }
 }
 

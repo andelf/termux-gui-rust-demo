@@ -176,6 +176,12 @@ impl Activity {
         HorizontalScrollView::new(self, parent)
     }
     
+    /// Create a HorizontalScrollView with custom parameters
+    pub fn create_horizontal_scroll_view_with_params(&mut self, parent: Option<i64>,
+                                                     fillviewport: bool, snapping: bool, nobar: bool) -> Result<HorizontalScrollView> {
+        HorizontalScrollView::new_with_params(self, parent, fillviewport, snapping, nobar)
+    }
+    
     /// Create a SwipeRefreshLayout
     pub fn create_swipe_refresh_layout(&mut self, parent: Option<i64>) -> Result<SwipeRefreshLayout> {
         SwipeRefreshLayout::new(self, parent)
