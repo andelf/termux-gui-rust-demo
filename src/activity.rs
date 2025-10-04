@@ -146,6 +146,16 @@ impl Activity {
         ProgressBar::new(self, parent)
     }
     
+    /// Create a ToggleButton
+    pub fn create_toggle_button(&mut self, text: &str, parent: Option<i64>) -> Result<ToggleButton> {
+        ToggleButton::new(self, text, parent)
+    }
+    
+    /// Create a ToggleButton with specified checked state
+    pub fn create_toggle_button_checked(&mut self, text: &str, parent: Option<i64>, checked: bool) -> Result<ToggleButton> {
+        ToggleButton::new_with_checked(self, text, parent, checked)
+    }
+    
     /// Set the Activity title
     pub fn set_title(&mut self, title: &str) -> Result<()> {
         self.send(&json!({
