@@ -1,171 +1,175 @@
-# HorizontalScrollView 滚动问题分析
+# HorizontalScrollView Scrolling Issue Analysis
 
-## 问题描述
+## Problem Description
 
-HorizontalScrollView 在内容很长的页面中无法滚动。
+HorizontalScrollView cannot scroll when the page content is very long.
 
-## 根本原因
+## Root Cause
 
-**嵌套滚动冲突** (Nested Scroll Conflict)
+**Nested Scroll Conflict**
 
-### 场景1：内容较短（可以工作）✅
+## Root Cause
+
+**Nested Scroll Conflict**
+
+### Scenario 1: Short Content (Works) ✅
 ```
-Activity (无滚动)
+Activity (no scrolling)
   └─ LinearLayout
-       ├─ HorizontalScrollView ← 可以水平滚动
-       └─ 其他少量内容
+       ├─ HorizontalScrollView ← Can scroll horizontally
+       └─ Other minimal content
 ```
-- 页面总高度 < 屏幕高度
-- 没有垂直滚动
-- 触摸事件直接传递给 HorizontalScrollView
-- **水平滚动正常工作**
+- Total page height < Screen height
+- No vertical scrolling
+- Touch events directly passed to HorizontalScrollView
+- **Horizontal scrolling works normally**
 
-### 场景2：内容超长（无法工作）❌
+### Scenario 2: Long Content (Doesn't Work) ❌
 ```
-Activity (默认启用垂直滚动)
-  └─ LinearLayout (高度超过屏幕)
-       ├─ HorizontalScrollView ← 水平滚动被阻止
-       ├─ 更多内容...
-       ├─ 更多内容...
-       └─ 更多内容...
+Activity (vertical scrolling enabled by default)
+  └─ LinearLayout (height exceeds screen)
+       ├─ HorizontalScrollView ← Horizontal scrolling blocked
+       ├─ More content...
+       ├─ More content...
+       └─ More content...
 ```
-- 页面总高度 > 屏幕高度
-- Activity/Window **自动启用垂直滚动**
-- 垂直滚动手势识别器**拦截所有触摸事件**
-- HorizontalScrollView 无法接收到水平滑动手势
-- **水平滚动被阻止**
+- Total page height > Screen height
+- Activity/Window **automatically enables vertical scrolling**
+- Vertical scroll gesture recognizer **intercepts all touch events**
+- HorizontalScrollView cannot receive horizontal swipe gestures
+- **Horizontal scrolling is blocked**
 
-## 技术解释
+## Technical Explanation
 
-### Android 触摸事件分发机制
+### Android Touch Event Dispatch Mechanism
 
-1. **触摸事件优先级**：
-   - 外层滚动容器（垂直）优先级高
-   - 内层滚动容器（水平）优先级低
+1. **Touch Event Priority**:
+   - Outer scroll container (vertical) has higher priority
+   - Inner scroll container (horizontal) has lower priority
 
-2. **事件拦截**：
+2. **Event Interception**:
    ```
-   用户滑动 → 外层检测到"可能是垂直滚动"
-            → 拦截事件，不传递给内层
-            → 内层的 HorizontalScrollView 收不到事件
+   User swipes → Outer layer detects "might be vertical scroll"
+               → Intercepts event, doesn't pass to inner layer
+               → Inner HorizontalScrollView doesn't receive events
    ```
 
-3. **为什么短内容可以**：
-   - 没有外层垂直滚动
-   - 事件直接到达 HorizontalScrollView
-   - 可以正常识别水平滑动
+3. **Why Short Content Works**:
+   - No outer vertical scrolling
+   - Events reach HorizontalScrollView directly
+   - Can properly recognize horizontal swipes
 
-### 为什么 fillviewport=true 是关键
+### Why fillviewport=true is Critical
 
-`fillviewport=true` 的作用：
-- 让 HorizontalScrollView 的子视图可以**超出容器宽度**
-- 明确告诉系统：这是一个**需要滚动的容器**
-- 提高 HorizontalScrollView 的**事件拦截优先级**
+The effect of `fillviewport=true`:
+- Allows HorizontalScrollView's child views to **exceed container width**
+- Explicitly tells the system: this is a **container that needs scrolling**
+- Increases HorizontalScrollView's **event interception priority**
 
-但这还不够！内容超长时，垂直滚动仍然会干扰。
+But this is not enough! When content is too long, vertical scrolling still interferes.
 
-## 解决方案
+## Solutions
 
-### 方案1：使用 NestedScrollView 包裹（推荐）✅
+### Solution 1: Use NestedScrollView Wrapper (Recommended) ✅
 
 ```rust
-// 使用 NestedScrollView 作为外层，支持嵌套滚动
+// Use NestedScrollView as outer layer, supports nested scrolling
 let scroll = activity.create_nested_scroll_view(None)?;
 let layout = activity.create_linear_layout(Some(scroll.id()))?;
 
-// HorizontalScrollView 在 NestedScrollView 内
+// HorizontalScrollView inside NestedScrollView
 let h_scroll = activity.create_horizontal_scroll_view(Some(layout.id()))?;
 ```
 
-**优点**：
-- NestedScrollView 支持嵌套滚动协调
-- 可以正确处理垂直+水平滚动冲突
-- Android 原生支持
+**Advantages**:
+- NestedScrollView supports nested scroll coordination
+- Can properly handle vertical + horizontal scroll conflicts
+- Native Android support
 
-### 方案2：减少内容长度（临时方案）✅
+### Solution 2: Reduce Content Length (Temporary Solution) ✅
 
 ```rust
-// 只放2-3行内容，避免触发垂直滚动
+// Only place 2-3 rows of content to avoid triggering vertical scrolling
 let main_layout = activity.create_linear_layout(None)?;
 let h_scroll1 = activity.create_horizontal_scroll_view(Some(main_layout.id()))?;
 let h_scroll2 = activity.create_horizontal_scroll_view(Some(main_layout.id()))?;
-// 不再添加更多内容
+// Don't add more content
 ```
 
-**优点**：
-- 简单直接
-- 避免了滚动冲突
+**Advantages**:
+- Simple and direct
+- Avoids scroll conflicts
 
-**缺点**：
-- 内容受限
-- 不适合复杂界面
+**Disadvantages**:
+- Content is limited
+- Not suitable for complex interfaces
 
-### 方案3：设置固定高度（可能有效）⚠️
+### Solution 3: Set Fixed Height (May Work) ⚠️
 
 ```rust
-// 为每个 HorizontalScrollView 设置固定高度
+// Set fixed height for each HorizontalScrollView
 h_scroll.view().set_height(&mut activity, 100)?;
 ```
 
-**原理**：
-- 固定高度可能提示系统这是独立的滚动区域
-- 但效果不确定
+**Principle**:
+- Fixed height may hint to the system that this is an independent scroll area
+- But the effect is uncertain
 
-## 实际测试结果
+## Actual Test Results
 
-### horizontal_scroll_test（可以滚动）✅
-- 只有标题 + 1行HorizontalScrollView
-- 总高度很短
-- **无垂直滚动冲突**
+### horizontal_scroll_test (Can Scroll) ✅
+- Only title + 1 row of HorizontalScrollView
+- Total height is short
+- **No vertical scroll conflict**
 
-### horizontal_scroll_demo_v2 旧版本（无法滚动）❌
-- 标题 + 说明 + 3行HorizontalScrollView + 详细信息
-- 总高度超过屏幕
-- **垂直滚动拦截了水平滚动**
+### horizontal_scroll_demo_v2 Old Version (Cannot Scroll) ❌
+- Title + description + 3 rows of HorizontalScrollView + detailed info
+- Total height exceeds screen
+- **Vertical scrolling intercepts horizontal scrolling**
 
-### horizontal_scroll_demo_v2 新版本（可以滚动）✅
-- 标题 + 说明 + 2行HorizontalScrollView
-- 总高度刚好不触发垂直滚动
-- **无冲突**
+### horizontal_scroll_demo_v2 New Version (Can Scroll) ✅
+- Title + description + 2 rows of HorizontalScrollView
+- Total height just doesn't trigger vertical scrolling
+- **No conflict**
 
-## 最佳实践
+## Best Practices
 
-### 1. 使用 NestedScrollView（推荐）
+### 1. Use NestedScrollView (Recommended)
 
 ```rust
 let scroll = activity.create_nested_scroll_view(None)?;
 let layout = activity.create_linear_layout(Some(scroll.id()))?;
 
-// 任意数量的 HorizontalScrollView 都可以
+// Any number of HorizontalScrollView works
 let h_scroll1 = activity.create_horizontal_scroll_view(Some(layout.id()))?;
 let h_scroll2 = activity.create_horizontal_scroll_view(Some(layout.id()))?;
-// ... 更多
+// ... more
 ```
 
-### 2. 确保按钮有固定宽度
+### 2. Ensure Buttons Have Fixed Width
 
 ```rust
 btn.view().set_width(&mut activity, 180)?;
 ```
 
-### 3. fillviewport 设为 true
+### 3. Set fillviewport to true
 
 ```rust
-// 在 layout.rs 中
+// In layout.rs
 "fillviewport": true
 ```
 
-## 总结
+## Summary
 
-**问题根源**：Android 的嵌套滚动冲突，垂直滚动拦截了水平滚动手势
+**Root Cause**: Android's nested scroll conflict, vertical scrolling intercepts horizontal scroll gestures
 
-**关键因素**：
-1. ✅ `fillviewport: true` - 必需
-2. ✅ 固定宽度的子元素 - 必需  
-3. ⚠️ 避免垂直滚动冲突 - 重要
-4. 💡 使用 NestedScrollView - 最佳方案
+**Key Factors**:
+1. ✅ `fillviewport: true` - Required
+2. ✅ Fixed width child elements - Required  
+3. ⚠️ Avoid vertical scroll conflicts - Important
+4. 💡 Use NestedScrollView - Best solution
 
-**经验教训**：
-- 简单测试可能无法发现问题
-- 需要测试复杂场景（内容超长）
-- Android 原生的滚动冲突需要特殊处理
+**Lessons Learned**:
+- Simple tests may not reveal the problem
+- Need to test complex scenarios (very long content)
+- Android's native scroll conflicts require special handling

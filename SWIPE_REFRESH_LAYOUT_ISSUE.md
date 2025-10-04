@@ -1,105 +1,105 @@
-# SwipeRefreshLayout 重要限制
+# SwipeRefreshLayout Important Limitation
 
-## 问题描述
+## Problem Description
 
-在使用 `SwipeRefreshLayout` 时，**不能对其直接子View设置margin**，否则会导致 termux-gui 插件崩溃。
+When using `SwipeRefreshLayout`, **you cannot set margin on its direct child View**, otherwise it will cause the termux-gui plugin to crash.
 
-## 错误现象
+## Error Symptom
 
 ```
 Error: Io(Os { code: 104, kind: ConnectionReset, message: "Connection reset by peer" })
 ```
 
-崩溃发生在设置margin后尝试创建下一个组件时。
+The crash occurs when trying to create the next component after setting margin.
 
-## 错误代码示例
+## Incorrect Code Example
 
 ```rust
-// ❌ 错误：会导致崩溃
+// ❌ Incorrect: Will cause crash
 let swipe_refresh = activity.create_swipe_refresh_layout(None)?;
 let layout = activity.create_linear_layout(Some(swipe_refresh.id()))?;
-layout.view().set_margin(&mut activity, 15)?;  // ← 这会导致崩溃！
+layout.view().set_margin(&mut activity, 15)?;  // ← This causes crash!
 ```
 
-## 正确代码示例
+## Correct Code Example
 
 ```rust
-// ✅ 正确：不要在SwipeRefreshLayout的直接子View上设置margin
+// ✅ Correct: Don't set margin on SwipeRefreshLayout's direct child View
 let swipe_refresh = activity.create_swipe_refresh_layout(None)?;
 let layout = activity.create_linear_layout(Some(swipe_refresh.id()))?;
-// 不设置margin
+// Don't set margin
 
-// 可以在LinearLayout的子View上设置margin
-let title = activity.create_text_view("标题", Some(layout.id()))?;
-title.view().set_margin(&mut activity, 10)?;  // ✅ 这是可以的
+// You can set margin on LinearLayout's children
+let title = activity.create_text_view("Title", Some(layout.id()))?;
+title.view().set_margin(&mut activity, 10)?;  // ✅ This is fine
 ```
 
-## 原因分析
+## Root Cause Analysis
 
-这是 Android SwipeRefreshLayout 的设计限制：
+This is a design limitation of Android's SwipeRefreshLayout:
 
-1. **SwipeRefreshLayout只能有一个直接子View**
-2. **它需要精确控制子View的布局位置**来实现下拉刷新效果
-3. 设置margin会干扰SwipeRefreshLayout的内部布局机制
-4. termux-gui 在检测到这种不合法操作时会崩溃
+1. **SwipeRefreshLayout can only have one direct child View**
+2. **It needs precise control over the child View's layout position** to implement pull-to-refresh
+3. Setting margin interferes with SwipeRefreshLayout's internal layout mechanism
+4. termux-gui crashes when it detects this illegal operation
 
-## 解决方案
+## Solutions
 
-### 方案1：不设置margin（推荐）
+### Solution 1: Don't Set Margin (Recommended)
 
 ```rust
 let swipe_refresh = activity.create_swipe_refresh_layout(None)?;
 let layout = activity.create_linear_layout(Some(swipe_refresh.id()))?;
-// 不设置layout的margin
+// Don't set margin on layout
 
-// 在子View上设置margin来实现间距
-let content = activity.create_text_view("内容", Some(layout.id()))?;
+// Set margin on child Views to achieve spacing
+let content = activity.create_text_view("Content", Some(layout.id()))?;
 content.view().set_margin(&mut activity, 15)?;
 ```
 
-### 方案2：使用嵌套布局
+### Solution 2: Use Nested Layout
 
-如果确实需要整体边距，可以嵌套一层布局：
+If you really need overall spacing, you can nest an additional layout:
 
 ```rust
 let swipe_refresh = activity.create_swipe_refresh_layout(None)?;
 let outer_layout = activity.create_linear_layout(Some(swipe_refresh.id()))?;
-// 不设置outer_layout的margin
+// Don't set margin on outer_layout
 
-// 在内部再创建一个布局，这个可以设置margin
+// Create another layout inside, this one can have margin
 let inner_layout = activity.create_linear_layout(Some(outer_layout.id()))?;
-inner_layout.view().set_margin(&mut activity, 15)?;  // ✅ 这是可以的
+inner_layout.view().set_margin(&mut activity, 15)?;  // ✅ This is fine
 
-// 在inner_layout中添加内容
-let content = activity.create_text_view("内容", Some(inner_layout.id()))?;
+// Add content in inner_layout
+let content = activity.create_text_view("Content", Some(inner_layout.id()))?;
 ```
 
-## 其他限制
+## Other Limitations
 
-除了margin，其他可能导致问题的操作：
+Besides margin, other operations that may cause issues:
 
-- ❌ `set_padding()` - 未测试，可能有同样问题
-- ❌ 设置固定宽高 - 可能干扰SwipeRefreshLayout的测量
-- ✅ `set_linear_layout_params()` - 在子View的子View上使用是安全的
+- ❌ `set_padding()` - Not tested, may have the same problem
+- ❌ Setting fixed width/height - May interfere with SwipeRefreshLayout's measurement
+- ✅ `set_linear_layout_params()` - Safe to use on children of the child View
 
-## 调试经验
+## Debugging Experience
 
-### 症状
+### Symptoms
 
-- 创建SwipeRefreshLayout成功
-- 创建LinearLayout成功  
-- 对LinearLayout调用set_margin()看似成功
-- 但在创建下一个组件时突然崩溃
+- Creating SwipeRefreshLayout succeeds
+- Creating LinearLayout succeeds  
+- Calling set_margin() on LinearLayout appears to succeed
+- But crashes suddenly when creating the next component
 
-### 调试过程
+### Debugging Process
 
-1. 初始以为是组件数量太多（13个）
-2. 减少到7个仍崩溃
-3. 对比可工作的step_test（4个组件）
-4. 发现唯一区别是step_test没有调用`layout.view().set_margin()`
-5. 移除set_margin()后问题解决
+1. Initially thought it was too many components (13)
+2. Reduced to 7 components, still crashes
+3. Compared with working step_test (4 components)
+4. Found the only difference was step_test didn't call `layout.view().set_margin()`
+5. Removed set_margin() and problem solved
 
-### 关键日志
+### Key Log
 
 ```
 [DEBUG] send_and_read: sending...
@@ -111,24 +111,24 @@ let content = activity.create_text_view("内容", Some(inner_layout.id()))?;
 Error: Io(Os { code: 104, kind: ConnectionReset, message: "Connection reset by peer" })
 ```
 
-注意：崩溃发生在**创建TextView时**，而不是set_margin时！
+Note: The crash occurs **when creating TextView**, not when calling set_margin!
 
-## 参考
+## Reference
 
-- Android SwipeRefreshLayout 文档强调只能有一个子View
-- 该子View的布局参数应由SwipeRefreshLayout完全控制
-- 类似问题可能存在于其他特殊布局容器中
+- Android SwipeRefreshLayout documentation emphasizes it can only have one child View
+- The child View's layout parameters should be completely controlled by SwipeRefreshLayout
+- Similar issues may exist in other special layout containers
 
-## 相关文件
+## Related Files
 
-- `examples/swipe_refresh_demo_v2.rs` - 正确的示例
-- `examples/swipe_refresh_step_test.rs` - 简单可工作的示例
-- `src/components/layout.rs` - SwipeRefreshLayout实现
+- `examples/swipe_refresh_demo_v2.rs` - Correct example
+- `examples/swipe_refresh_step_test.rs` - Simple working example
+- `src/components/layout.rs` - SwipeRefreshLayout implementation
 
-## 更新日期
+## Update Date
 
-2024年（根据发现时间）
+2024 (based on discovery time)
 
 ---
 
-**重要提示**：在编写SwipeRefreshLayout相关代码时，务必记住这个限制！
+**Important Note**: When writing SwipeRefreshLayout-related code, always remember this limitation!
