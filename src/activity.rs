@@ -176,6 +176,11 @@ impl Activity {
         HorizontalScrollView::new(self, parent)
     }
     
+    /// Create a SwipeRefreshLayout
+    pub fn create_swipe_refresh_layout(&mut self, parent: Option<i64>) -> Result<SwipeRefreshLayout> {
+        SwipeRefreshLayout::new(self, parent)
+    }
+    
     /// Set the Activity title
     pub fn set_title(&mut self, title: &str) -> Result<()> {
         self.send(&json!({
