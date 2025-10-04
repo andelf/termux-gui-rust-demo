@@ -1,10 +1,11 @@
-//! WebView component - 网页视图组件
+//! WebView component for displaying web content
 //!
-//! WebView 用于在应用中显示网页内容，支持加载URL、运行JavaScript等功能。
+//! The WebView component allows you to display web pages and HTML content within your application,
+//! with support for loading URLs, executing JavaScript, and more.
 //!
-//! # 重要提示
+//! # Important Usage Notes
 //!
-//! 显示 HTML 内容时，**必须先启用 JavaScript** 才能看到动态效果：
+//! When displaying HTML content with dynamic effects, **you must enable JavaScript first**:
 //!
 //! ```no_run
 //! use termux_gui_rust_demo::prelude::*;
@@ -13,10 +14,10 @@
 //! let layout = LinearLayout::new(&mut activity, None, true)?;
 //! let webview = WebView::new(&mut activity, Some(layout.id()))?;
 //!
-//! // ⚠️ 关键：必须先启用 JavaScript，否则 HTML 中的动态内容不会显示
+//! // ⚠️ Critical: Enable JavaScript first, or dynamic HTML content won't display
 //! webview.allow_javascript(&mut activity, true)?;
 //!
-//! // 设置 HTML 内容
+//! // Set HTML content
 //! let html = r#"
 //!     <html>
 //!     <body style="background: purple;">
@@ -26,7 +27,7 @@
 //! "#;
 //! webview.set_data(&mut activity, html)?;
 //!
-//! // 或者加载外部网页
+//! // Or load an external webpage
 //! webview.load_uri(&mut activity, "https://www.google.com")?;
 //! # Ok::<(), termux_gui_rust_demo::error::GuiError>(())
 //! ```
@@ -36,29 +37,30 @@ use crate::activity::Activity;
 use crate::view::View;
 use crate::error::Result;
 
-/// WebView 组件，用于显示网页内容
+/// WebView component for displaying web content
 ///
-/// # 重要使用说明
+/// # Important Usage Notes
 ///
-/// 1. **JavaScript 支持**：如果 HTML 内容包含 JavaScript 或动态效果，必须先调用
-///    `allow_javascript()` 启用 JavaScript，否则可能看到空白页面。
+/// 1. **JavaScript Support**: If your HTML content contains JavaScript or dynamic effects,
+///    you must call `allow_javascript()` first to enable JavaScript, otherwise you may see
+///    a blank page.
 ///
-/// 2. **HTML 内容显示顺序**：
+/// 2. **HTML Content Display Order**:
 ///    ```no_run
 ///    # use termux_gui_rust_demo::prelude::*;
 ///    # let mut activity = Activity::new()?;
 ///    # let webview = WebView::new(&mut activity, None)?;
-///    // 第一步：启用 JavaScript（如果需要）
+///    // Step 1: Enable JavaScript (if needed)
 ///    webview.allow_javascript(&mut activity, true)?;
 ///    
-///    // 第二步：设置 HTML 内容
+///    // Step 2: Set HTML content
 ///    webview.set_data(&mut activity, "<html>...</html>")?;
 ///    # Ok::<(), termux_gui_rust_demo::error::GuiError>(())
 ///    ```
 ///
-/// 3. **加载外部 URL**：直接调用 `load_uri()` 即可，无需特殊顺序
+/// 3. **Loading External URLs**: Simply call `load_uri()` - no special order required
 ///
-/// # 示例
+/// # Examples
 ///
 /// ```no_run
 /// use termux_gui_rust_demo::prelude::*;
@@ -66,11 +68,11 @@ use crate::error::Result;
 /// let mut activity = Activity::new()?;
 /// let webview = WebView::new(&mut activity, None)?;
 ///
-/// // 方式1：显示 HTML 内容（需要先启用 JavaScript）
+/// // Method 1: Display HTML content (requires JavaScript to be enabled first)
 /// webview.allow_javascript(&mut activity, true)?;
 /// webview.set_data(&mut activity, "<html><body><h1>Hello</h1></body></html>")?;
 ///
-/// // 方式2：加载网页
+/// // Method 2: Load a webpage
 /// webview.load_uri(&mut activity, "https://www.example.com")?;
 /// # Ok::<(), termux_gui_rust_demo::error::GuiError>(())
 /// ```
@@ -80,15 +82,19 @@ pub struct WebView {
 }
 
 impl WebView {
-    /// 创建一个新的 WebView
+    /// Creates a new WebView
     ///
-    /// # 参数
-    /// - `activity`: Activity 引用
-    /// - `parent`: 可选的父视图ID
+    /// # Arguments
+    /// - `activity`: Reference to the Activity
+    /// - `parent`: Optional parent view ID
     ///
-    /// # 示例
+    /// # Examples
     /// ```no_run
+    /// # use termux_gui_rust_demo::prelude::*;
+    /// # let mut activity = Activity::new()?;
+    /// # let layout_id = 0;
     /// let webview = WebView::new(&mut activity, Some(layout_id))?;
+    /// # Ok::<(), termux_gui_rust_demo::error::GuiError>(())
     /// ```
     pub fn new(activity: &mut Activity, parent: Option<i64>) -> Result<Self> {
         eprintln!("[DEBUG] WebView::new() - creating WebView...");
@@ -119,25 +125,29 @@ impl WebView {
         })
     }
     
-    /// 获取视图ID
+    /// Gets the view ID
     pub fn id(&self) -> i64 {
         self.view.id()
     }
     
-    /// 获取视图引用
+    /// Gets a reference to the underlying View
     pub fn view(&self) -> &View {
         &self.view
     }
     
-    /// 加载URI/URL
+    /// Loads a URI/URL
     ///
-    /// # 参数
-    /// - `activity`: Activity 引用
-    /// - `uri`: 要加载的URL，例如 "https://www.google.com"
+    /// # Arguments
+    /// - `activity`: Reference to the Activity
+    /// - `uri`: The URL to load, e.g., "https://www.google.com"
     ///
-    /// # 示例
+    /// # Examples
     /// ```no_run
+    /// # use termux_gui_rust_demo::prelude::*;
+    /// # let mut activity = Activity::new()?;
+    /// # let webview = WebView::new(&mut activity, None)?;
     /// webview.load_uri(&mut activity, "https://www.google.com")?;
+    /// # Ok::<(), termux_gui_rust_demo::error::GuiError>(())
     /// ```
     pub fn load_uri(&self, activity: &mut Activity, uri: &str) -> Result<()> {
         activity.send(&json!({
@@ -151,29 +161,29 @@ impl WebView {
         Ok(())
     }
     
-    /// 设置HTML内容
+    /// Sets HTML content
     ///
-    /// ⚠️ **重要**：如果 HTML 包含 JavaScript 或动态效果，必须先调用 `allow_javascript(true)`，
-    /// 否则可能看到空白页面。
+    /// ⚠️ **Important**: If the HTML contains JavaScript or dynamic effects, you must call
+    /// `allow_javascript(true)` first, otherwise you may see a blank page.
     ///
-    /// # 参数
-    /// - `activity`: Activity 引用
-    /// - `data`: HTML文档内容
+    /// # Arguments
+    /// - `activity`: Reference to the Activity
+    /// - `data`: The HTML document content
     ///
-    /// # 示例
+    /// # Examples
     /// ```no_run
     /// # use termux_gui_rust_demo::prelude::*;
     /// # let mut activity = Activity::new()?;
     /// # let webview = WebView::new(&mut activity, None)?;
-    /// // 如果 HTML 包含 JavaScript，必须先启用
+    /// // If HTML contains JavaScript, enable it first
     /// webview.allow_javascript(&mut activity, true)?;
     /// 
-    /// // 然后设置 HTML 内容
+    /// // Then set the HTML content
     /// webview.set_data(&mut activity, "<html><body><h1>Hello</h1></body></html>")?;
     /// # Ok::<(), termux_gui_rust_demo::error::GuiError>(())
     /// ```
     pub fn set_data(&self, activity: &mut Activity, data: &str) -> Result<()> {
-        // 使用 base64 编码来支持包含非ASCII字符的HTML内容
+        // Use base64 encoding to support HTML content with non-ASCII characters
         let encoded = base64::Engine::encode(&base64::engine::general_purpose::STANDARD, data.as_bytes());
         
         activity.send(&json!({
@@ -188,30 +198,32 @@ impl WebView {
         Ok(())
     }
     
-    /// 允许JavaScript执行
+    /// Allows JavaScript execution
     ///
-    /// ⚠️ **重要**：显示包含 JavaScript 或动态效果的 HTML 时，必须先调用此方法启用 JavaScript。
+    /// ⚠️ **Important**: When displaying HTML with JavaScript or dynamic effects, you must
+    /// call this method first to enable JavaScript.
     ///
-    /// 如果请求允许JavaScript，会弹出用户确认对话框，用户可以拒绝。
-    /// 此方法会阻塞直到用户响应。
+    /// If JavaScript is requested to be enabled, a user confirmation dialog will appear,
+    /// and the user can deny the request. This method blocks until the user responds.
     ///
-    /// # 参数
-    /// - `activity`: Activity 引用
-    /// - `allow`: 是否允许JavaScript
+    /// # Arguments
+    /// - `activity`: Reference to the Activity
+    /// - `allow`: Whether to allow JavaScript
     ///
-    /// # 返回
-    /// 返回调用后JavaScript是否启用（如果用户拒绝，即使传入 true 也会返回 false）
+    /// # Returns
+    /// Returns whether JavaScript is enabled after the call (if the user denies,
+    /// it will return false even if you passed true)
     ///
-    /// # 示例
+    /// # Examples
     /// ```no_run
     /// # use termux_gui_rust_demo::prelude::*;
     /// # let mut activity = Activity::new()?;
     /// # let webview = WebView::new(&mut activity, None)?;
-    /// // 启用 JavaScript（用户需要确认）
+    /// // Enable JavaScript (requires user confirmation)
     /// let enabled = webview.allow_javascript(&mut activity, true)?;
     /// if enabled {
-    ///     println!("JavaScript 已启用");
-    ///     // 现在可以设置包含 JavaScript 的 HTML
+    ///     println!("JavaScript enabled");
+    ///     // Now you can set HTML with JavaScript
     ///     webview.set_data(&mut activity, "<html><body><script>alert('Hi!');</script></body></html>")?;
     /// }
     /// # Ok::<(), termux_gui_rust_demo::error::GuiError>(())
@@ -229,11 +241,11 @@ impl WebView {
         Ok(response.as_bool().unwrap_or(false))
     }
     
-    /// 允许从 content:// URI 加载内容
+    /// Allows loading content from content:// URIs
     ///
-    /// # 参数
-    /// - `activity`: Activity 引用
-    /// - `allow`: 是否允许
+    /// # Arguments
+    /// - `activity`: Reference to the Activity
+    /// - `allow`: Whether to allow loading from content URIs
     pub fn allow_content_uri(&self, activity: &mut Activity, allow: bool) -> Result<()> {
         activity.send(&json!({
             "method": "allowContentURI",
@@ -246,11 +258,11 @@ impl WebView {
         Ok(())
     }
     
-    /// 允许导航到不同站点
+    /// Allows navigation to different sites
     ///
-    /// # 参数
-    /// - `activity`: Activity 引用
-    /// - `allow`: 是否允许用户和JavaScript导航到不同站点
+    /// # Arguments
+    /// - `activity`: Reference to the Activity
+    /// - `allow`: Whether to allow users and JavaScript to navigate to different sites
     pub fn allow_navigation(&self, activity: &mut Activity, allow: bool) -> Result<()> {
         activity.send(&json!({
             "method": "allowNavigation",
@@ -263,23 +275,24 @@ impl WebView {
         Ok(())
     }
     
-    /// 在WebView中执行JavaScript代码
+    /// Executes JavaScript code in the WebView
     ///
-    /// ⚠️ **前置条件**：必须先通过 `allow_javascript(true)` 启用JavaScript，否则代码不会执行。
+    /// ⚠️ **Prerequisite**: You must enable JavaScript via `allow_javascript(true)` first,
+    /// otherwise the code will not execute.
     ///
-    /// # 参数
-    /// - `activity`: Activity 引用
-    /// - `code`: 要执行的JavaScript代码
+    /// # Arguments
+    /// - `activity`: Reference to the Activity
+    /// - `code`: The JavaScript code to execute
     ///
-    /// # 示例
+    /// # Examples
     /// ```no_run
     /// # use termux_gui_rust_demo::prelude::*;
     /// # let mut activity = Activity::new()?;
     /// # let webview = WebView::new(&mut activity, None)?;
-    /// // 第一步：启用 JavaScript
+    /// // Step 1: Enable JavaScript
     /// webview.allow_javascript(&mut activity, true)?;
     ///
-    /// // 第二步：执行 JavaScript 代码
+    /// // Step 2: Execute JavaScript code
     /// webview.evaluate_js(&mut activity, "document.body.style.background = 'red';")?;
     /// # Ok::<(), termux_gui_rust_demo::error::GuiError>(())
     /// ```
@@ -295,7 +308,7 @@ impl WebView {
         Ok(())
     }
     
-    /// 后退到历史记录的上一页
+    /// Goes back to the previous page in history
     pub fn go_back(&self, activity: &mut Activity) -> Result<()> {
         activity.send(&json!({
             "method": "goBack",
@@ -307,7 +320,7 @@ impl WebView {
         Ok(())
     }
     
-    /// 前进到历史记录的下一页
+    /// Goes forward to the next page in history
     pub fn go_forward(&self, activity: &mut Activity) -> Result<()> {
         activity.send(&json!({
             "method": "goForward",

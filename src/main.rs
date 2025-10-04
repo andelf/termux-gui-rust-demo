@@ -7,7 +7,7 @@ use serde_json::{json, Value};
 use rand::{thread_rng, Rng};
 use rand::distributions::Alphanumeric;
 
-/// 生成随机的socket地址（50个字符）
+/// Generates a random socket address (50 characters)
 fn generate_random_address() -> String {
     thread_rng()
         .sample_iter(&Alphanumeric)
@@ -16,35 +16,35 @@ fn generate_random_address() -> String {
         .collect()
 }
 
-/// 创建抽象命名空间的 Unix Socket
-/// 抽象命名空间地址以 null 字节开头
+/// Creates a Unix Socket in the abstract namespace
+/// Abstract namespace addresses start with a null byte
 fn bind_abstract_socket(name: &str) -> Result<UnixListener, Error> {
-    // 创建抽象命名空间地址: \0 + name
-    let mut addr_bytes = vec![0u8]; // 以 null 字节开头
+    // Create abstract namespace address: \0 + name
+    let mut addr_bytes = vec![0u8]; // Starts with null byte
     addr_bytes.extend_from_slice(name.as_bytes());
     
-    // 使用底层系统调用绑定
+    // Use low-level system calls for binding
     unsafe {
         use std::os::unix::io::FromRawFd;
         use std::mem;
         
-        // 创建 socket
+        // Create socket
         let fd = libc::socket(libc::AF_UNIX, libc::SOCK_STREAM, 0);
         if fd < 0 {
             return Err(Error::last_os_error());
         }
         
-        // 准备 sockaddr_un 结构
+        // Prepare sockaddr_un structure
         let mut addr: libc::sockaddr_un = mem::zeroed();
         addr.sun_family = libc::AF_UNIX as u16;
         
-        // 复制地址到 sun_path (包括开头的 \0)
+        // Copy address to sun_path (including leading \0)
         let copy_len = addr_bytes.len().min(addr.sun_path.len());
         for (i, &byte) in addr_bytes.iter().take(copy_len).enumerate() {
-            addr.sun_path[i] = byte as _;  // 自动转换为正确的类型
+            addr.sun_path[i] = byte as _;  // Automatic type conversion
         }
         
-        // 绑定 socket
+        // Bind socket
         let addr_len = (mem::size_of::<libc::sa_family_t>() + addr_bytes.len()) as libc::socklen_t;
         let bind_result = libc::bind(
             fd,
@@ -57,7 +57,7 @@ fn bind_abstract_socket(name: &str) -> Result<UnixListener, Error> {
             return Err(Error::last_os_error());
         }
         
-        // 开始监听
+        // Start listening
         if libc::listen(fd, 1) < 0 {
             libc::close(fd);
             return Err(Error::last_os_error());
@@ -67,7 +67,7 @@ fn bind_abstract_socket(name: &str) -> Result<UnixListener, Error> {
     }
 }
 
-/// 发送消息到socket（4字节长度 + JSON内容）
+/// Sends a message to the socket (4-byte length + JSON content)
 fn send_message(stream: &mut UnixStream, msg: &Value) -> Result<(), Error> {
     let json_str = msg.to_string();
     let json_bytes = json_str.as_bytes();
@@ -77,25 +77,25 @@ fn send_message(stream: &mut UnixStream, msg: &Value) -> Result<(), Error> {
     stream.write_all(json_bytes)?;
     stream.flush()?;
     
-    println!("发送消息: {}", json_str);
+    println!("Sent message: {}", json_str);
     Ok(())
 }
 
-/// 从socket读取消息（4字节长度 + JSON内容）
+/// Reads a message from the socket (4-byte length + JSON content)
 fn read_message(stream: &mut UnixStream) -> Result<Value, Error> {
-    // 读取4字节的长度
+    // Read 4-byte length
     let mut len_buf = [0u8; 4];
     stream.read_exact(&mut len_buf)?;
     let len = u32::from_be_bytes(len_buf) as usize;
     
-    // 读取消息体
+    // Read message body
     let mut buf = vec![0u8; len];
     stream.read_exact(&mut buf)?;
     
     let json_str = String::from_utf8(buf).expect("Invalid UTF-8");
     let value: Value = serde_json::from_str(&json_str).expect("Invalid JSON");
     
-    println!("接收消息: {}", json_str);
+    println!("Received message: {}", json_str);
     Ok(value)
 }
 
