@@ -39,7 +39,8 @@ fn main() -> Result<()> {
         match event_type {
             "destroy" => {
                 println!("\n✓ Activity 已关闭");
-                break;
+                println!("\n✓ 程序结束");
+                return Ok(());
             },
             "click" => {
                 let id = event["value"]["id"].as_i64().unwrap_or(-1);
@@ -56,8 +57,4 @@ fn main() -> Result<()> {
             }
         }
     }
-    
-    activity.finish()?;
-    println!("\n✓ 程序结束");
-    Ok(())
 }

@@ -1,7 +1,7 @@
 // Button 交互式演示 - 全屏版本
 // 测试是否Dialog尺寸问题导致控件不可见
 
-use termux_gui::{Activity, Result, WRAP_CONTENT};
+use termux_gui::{Activity, Result};
 use termux_gui::connection::read_message;
 
 fn main() -> Result<()> {
@@ -58,8 +58,10 @@ fn main() -> Result<()> {
         
         match event_type {
             "destroy" => {
+                // Activity 已被系统销毁，直接退出即可
                 println!("\n✓ Activity 已关闭");
-                break;
+                println!("✓ 程序结束");
+                return Ok(());
             },
             "click" => {
                 let id = event["value"]["id"].as_i64().unwrap_or(-1);
@@ -91,8 +93,4 @@ fn main() -> Result<()> {
             _ => {}
         }
     }
-    
-    activity.finish()?;
-    println!("✓ 程序结束");
-    Ok(())
 }
