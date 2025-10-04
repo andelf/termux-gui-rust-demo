@@ -1,8 +1,8 @@
 # 下一步行动计划
 
-## 📅 更新时间: 2025-01-04 (🎉 所有核心组件完成!)
+## 📅 更新时间: 2025-01-04 (🚀 已发布到 crates.io!)
 
-## ✅ 当前状态 - 核心功能全部完成！🎊
+## ✅ 当前状态 - v0.2.0 已发布到 crates.io！🎉
 
 ### 核心库完成度 - 100%！
 - ✅ 核心库创建完成 (src/lib.rs, src/activity.rs, src/connection.rs, src/view.rs)
@@ -207,8 +207,8 @@ if webview.allow_javascript(&mut activity, true)? {
 
 ### 版本规划
 - ✅ v0.1.0 - 基础框架和6个核心组件
-- ✅ v0.2.0 - 扩展到20个组件
-- ⏳ v0.3.0 - 文档完善，准备发布
+- ✅ **v0.2.0 - 扩展到20个组件 - 已发布到 crates.io!** 🚀 **[NEW!]**
+- ⏳ v0.3.0 - 文档完善，性能优化
 - 🔮 v1.0.0 - 稳定版本，生产就绪
 
 ---
@@ -225,11 +225,17 @@ if webview.allow_javascript(&mut activity, true)? {
 - ✅ 代码量减少52%
 - ✅ 所有已知bug修复
 - ✅ **所有核心组件100%完成！** 🎊
+- ✅ **v0.2.0 发布到 crates.io!** 🚀 **[NEW!]**
+  - 包名: `termux-gui`
+  - 版本: 0.2.0
+  - 链接: https://crates.io/crates/termux-gui
+  - 发布时间: 2025-01-04
 
 ### 下一个里程碑
-- ⏳ 文档完善到90%
+- ⏳ API文档注释完善到90%
 - ⏳ 准备v0.3.0版本发布
 - ⏳ 创建使用教程和最佳实践
+- ⏳ 性能优化和代码清理
 
 ---
 
@@ -264,4 +270,4 @@ if webview.allow_javascript(&mut activity, true)? {
 
 ---
 
-**🎉 恭喜！所有20个核心组件已经完成！下一步是完善文档和准备发布！** 🦀✨🚀
+**🚀 重大成就！v0.2.0 已成功发布到 crates.io！现在任何人都可以通过 `cargo add termux-gui` 使用这个库！** 🦀✨🎊

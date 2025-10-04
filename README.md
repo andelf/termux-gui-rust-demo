@@ -35,6 +35,21 @@ termux-gui-rust-demo/
 
 ## Quick Start
 
+### Installation
+
+Add this library to your Rust project:
+
+```bash
+cargo add termux-gui
+```
+
+Or add it manually to your `Cargo.toml`:
+
+```toml
+[dependencies]
+termux-gui = "0.2.0"
+```
+
 ### Prerequisites
 
 1. Install [Termux](https://termux.com/) on your Android device
@@ -44,7 +59,7 @@ termux-gui-rust-demo/
 pkg install rust
 ```
 
-### Building
+### Building from Source
 
 ```bash
 cd termux-gui-rust-demo
