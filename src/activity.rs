@@ -121,6 +121,11 @@ impl Activity {
         RadioButton::new(self, text, parent)
     }
     
+    /// Create a RadioButton with specified checked state
+    pub fn create_radio_button_checked(&mut self, text: &str, parent: Option<i64>, checked: bool) -> Result<RadioButton> {
+        RadioButton::new_with_checked(self, text, parent, checked)
+    }
+    
     /// Create a RadioGroup
     pub fn create_radio_group(&mut self, parent: Option<i64>) -> Result<RadioGroup> {
         RadioGroup::new(self, parent)
