@@ -50,7 +50,7 @@ impl Spinner {
     
     /// Set the list of options
     pub fn set_list(&self, activity: &mut Activity, items: &[&str]) -> Result<()> {
-        activity.send_read(&json!({
+        activity.send(&json!({
             "method": "setList",
             "params": {
                 "aid": self.aid,
@@ -63,7 +63,7 @@ impl Spinner {
     
     /// Refresh the spinner (needed after setList to ensure display is updated)
     pub fn refresh(&self, activity: &mut Activity) -> Result<()> {
-        activity.send_read(&json!({
+        activity.send(&json!({
             "method": "refreshSpinner",
             "params": {
                 "aid": self.aid,

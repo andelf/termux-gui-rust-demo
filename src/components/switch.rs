@@ -51,7 +51,7 @@ impl Switch {
     
     /// Set the switch text
     pub fn set_text(&self, activity: &mut Activity, text: &str) -> Result<()> {
-        activity.send_read(&json!({
+        activity.send(&json!({
             "method": "setText",
             "params": {
                 "aid": self.aid,
@@ -64,7 +64,7 @@ impl Switch {
     
     /// Set checked state
     pub fn set_checked(&self, activity: &mut Activity, checked: bool) -> Result<()> {
-        activity.send_read(&json!({
+        activity.send(&json!({
             "method": "setChecked",
             "params": {
                 "aid": self.aid,
