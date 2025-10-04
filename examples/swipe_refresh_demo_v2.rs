@@ -19,16 +19,17 @@ fn main() -> Result<()> {
     
     // 在 SwipeRefreshLayout 内创建 LinearLayout（只能有一个子视图）
     let layout = activity.create_linear_layout(Some(swipe_refresh.id()))?;
-    layout.view().set_margin(&mut activity, 15)?;
+    // ⚠️ 重要：不要在SwipeRefreshLayout的直接子View上设置margin，会导致termux-gui崩溃！
+    // 可以在LinearLayout的子View上设置margin
     
-    // 创建标题
+    // 标题
     let title = activity.create_text_view("🔄 下拉刷新演示", Some(layout.id()))?;
     title.set_text_size(&mut activity, 26)?;
     title.view().set_margin(&mut activity, 10)?;
     title.view().set_height_wrap_content(&mut activity)?;
     title.view().set_linear_layout_params(&mut activity, 0, None)?;
     
-    // 创建说明
+    // 说明
     let desc = activity.create_text_view("向下拉动页面触发刷新", Some(layout.id()))?;
     desc.view().set_margin(&mut activity, 5)?;
     desc.view().set_height_wrap_content(&mut activity)?;
@@ -69,19 +70,17 @@ fn main() -> Result<()> {
     content_title.view().set_linear_layout_params(&mut activity, 0, None)?;
     content_title.set_text_color(&mut activity, 0xFF4CAF50u32 as i32)?;
     
-    // 内容项1
+    // 内容项
     let item1 = activity.create_text_view("📄 项目 1", Some(layout.id()))?;
     item1.view().set_margin(&mut activity, 8)?;
     item1.view().set_height_wrap_content(&mut activity)?;
     item1.view().set_linear_layout_params(&mut activity, 0, None)?;
     
-    // 内容项2
     let item2 = activity.create_text_view("📄 项目 2", Some(layout.id()))?;
     item2.view().set_margin(&mut activity, 8)?;
     item2.view().set_height_wrap_content(&mut activity)?;
     item2.view().set_linear_layout_params(&mut activity, 0, None)?;
     
-    // 内容项3
     let item3 = activity.create_text_view("📄 项目 3", Some(layout.id()))?;
     item3.view().set_margin(&mut activity, 8)?;
     item3.view().set_height_wrap_content(&mut activity)?;
@@ -113,7 +112,6 @@ fn main() -> Result<()> {
     println!("提示:");
     println!("  • 向下拉动页面触发刷新");
     println!("  • 或点击按钮手动刷新");
-    println!("  • 刷新会模拟2秒的加载");
     println!("━━━━━━━━━━━━━━━━━━━━━━\n");
     
     let mut refresh_counter = 0;
@@ -130,12 +128,9 @@ fn main() -> Result<()> {
                 return Ok(());
             },
             "refresh" => {
-                // 用户触发了下拉刷新
                 println!("🔄 下拉刷新触发！");
                 
                 refresh_counter += 1;
-                
-                // 更新计数器
                 refresh_count.set_text(&mut activity, &format!("刷新次数: {}", refresh_counter))?;
                 
                 // 更新时间
@@ -151,11 +146,8 @@ fn main() -> Result<()> {
                 item3.set_text(&mut activity, &format!("📄 项目 3 (刷新 #{})", refresh_counter))?;
                 
                 println!("⏳ 模拟加载中...");
-                
-                // 模拟网络请求（2秒）
                 thread::sleep(Duration::from_secs(2));
                 
-                // 刷新完成，停止动画
                 swipe_refresh.set_refreshing(&mut activity, false)?;
                 println!("✅ 刷新完成！\n");
             },
@@ -165,18 +157,10 @@ fn main() -> Result<()> {
                 if clicked_id == manual_btn.id() {
                     println!("🔄 手动刷新触发！");
                     
-                    // 显示刷新动画
                     swipe_refresh.set_refreshing(&mut activity, true)?;
                     
                     refresh_counter += 1;
-                    
                     refresh_count.set_text(&mut activity, &format!("刷新次数: {}", refresh_counter))?;
-                    
-                    let now = std::time::SystemTime::now()
-                        .duration_since(std::time::UNIX_EPOCH)
-                        .unwrap()
-                        .as_secs();
-                    last_time.set_text(&mut activity, &format!("最后刷新: {} 秒", now % 10000))?;
                     
                     item1.set_text(&mut activity, &format!("📄 项目 1 (刷新 #{})", refresh_counter))?;
                     item2.set_text(&mut activity, &format!("📄 项目 2 (刷新 #{})", refresh_counter))?;
