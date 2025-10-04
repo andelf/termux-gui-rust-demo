@@ -9,6 +9,7 @@ mod radio;
 mod spinner;
 mod layout;
 mod image_view;
+mod progress_bar;
 
 pub use text_view::TextView;
 pub use button::Button;
@@ -19,3 +20,4 @@ pub use radio::{RadioButton, RadioGroup};
 pub use spinner::Spinner;
 pub use layout::{LinearLayout, NestedScrollView};
 pub use image_view::ImageView;
+pub use progress_bar::ProgressBar;

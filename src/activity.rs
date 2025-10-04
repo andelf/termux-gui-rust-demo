@@ -141,6 +141,11 @@ impl Activity {
         ImageView::new(self, parent)
     }
     
+    /// Create a ProgressBar
+    pub fn create_progress_bar(&mut self, parent: Option<i64>) -> Result<ProgressBar> {
+        ProgressBar::new(self, parent)
+    }
+    
     /// Set the Activity title
     pub fn set_title(&mut self, title: &str) -> Result<()> {
         self.send(&json!({
