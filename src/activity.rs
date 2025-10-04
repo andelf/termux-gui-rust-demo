@@ -136,6 +136,11 @@ impl Activity {
         Spinner::new(self, parent)
     }
     
+    /// Create an ImageView
+    pub fn create_image_view(&mut self, parent: Option<i64>) -> Result<ImageView> {
+        ImageView::new(self, parent)
+    }
+    
     /// Set the Activity title
     pub fn set_title(&mut self, title: &str) -> Result<()> {
         self.send(&json!({

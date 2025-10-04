@@ -8,6 +8,7 @@ mod switch;
 mod radio;
 mod spinner;
 mod layout;
+mod image_view;
 
 pub use text_view::TextView;
 pub use button::Button;
@@ -17,3 +18,4 @@ pub use switch::Switch;
 pub use radio::{RadioButton, RadioGroup};
 pub use spinner::Spinner;
 pub use layout::{LinearLayout, NestedScrollView};
+pub use image_view::ImageView;
