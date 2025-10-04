@@ -161,6 +161,11 @@ impl Activity {
         Space::new(self, parent)
     }
     
+    /// Create a FrameLayout
+    pub fn create_frame_layout(&mut self, parent: Option<i64>) -> Result<FrameLayout> {
+        FrameLayout::new(self, parent)
+    }
+    
     /// Set the Activity title
     pub fn set_title(&mut self, title: &str) -> Result<()> {
         self.send(&json!({
