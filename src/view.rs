@@ -26,8 +26,8 @@ impl View {
     
     /// Set view width
     pub fn set_width(&self, activity: &mut Activity, width: i32) -> Result<()> {
-        activity.send_read(&json!({
-            "method": "setDimensions",
+        activity.send(&json!({
+            "method": "setWidth",
             "params": {
                 "aid": activity.id(),
                 "id": self.id,
@@ -39,8 +39,8 @@ impl View {
     
     /// Set view height
     pub fn set_height(&self, activity: &mut Activity, height: i32) -> Result<()> {
-        activity.send_read(&json!({
-            "method": "setDimensions",
+        activity.send(&json!({
+            "method": "setHeight",
             "params": {
                 "aid": activity.id(),
                 "id": self.id,
@@ -52,21 +52,15 @@ impl View {
     
     /// Set view width and height
     pub fn set_dimensions(&self, activity: &mut Activity, width: i32, height: i32) -> Result<()> {
-        activity.send_read(&json!({
-            "method": "setDimensions",
-            "params": {
-                "aid": activity.id(),
-                "id": self.id,
-                "width": width,
-                "height": height
-            }
-        }))?;
+        // Call both methods since there's no combined setDimensions
+        self.set_width(activity, width)?;
+        self.set_height(activity, height)?;
         Ok(())
     }
     
     /// Set view margin
     pub fn set_margin(&self, activity: &mut Activity, margin: i32) -> Result<()> {
-        activity.send_read(&json!({
+        activity.send(&json!({
             "method": "setMargin",
             "params": {
                 "aid": activity.id(),
@@ -114,7 +108,7 @@ impl View {
             params["position"] = json!(pos);
         }
         
-        activity.send_read(&json!({
+        activity.send(&json!({
             "method": "setLinearLayoutParams",
             "params": params
         }))?;

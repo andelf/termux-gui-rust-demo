@@ -24,10 +24,12 @@ impl TextView {
             params["parent"] = json!(parent_id);
         }
         
+        eprintln!("[DEBUG] TextView::new() - sending createTextView...");
         let response = activity.send_read(&json!({
             "method": "createTextView",
             "params": params
         }))?;
+        eprintln!("[DEBUG] TextView::new() - got response: {:?}", response);
         
         let id = response
             .as_i64()

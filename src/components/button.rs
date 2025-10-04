@@ -25,10 +25,12 @@ impl Button {
             params["parent"] = json!(parent_id);
         }
         
+        eprintln!("[DEBUG] Button::new() - sending createButton...");
         let response = activity.send_read(&json!({
             "method": "createButton",
             "params": params
         }))?;
+        eprintln!("[DEBUG] Button::new() - got response: {:?}", response);
         
         let id = response
             .as_i64()
