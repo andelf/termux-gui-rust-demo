@@ -10,12 +10,16 @@ use std::thread;
 fn main() -> Result<()> {
     println!("=== ProgressBar 进度条演示 (新库版本) ===\n");
     
-    // 创建 Activity（对话框模式）
-    let mut activity = Activity::new(true)?;
+    // 创建 Activity（全屏模式）
+    let mut activity = Activity::new(false)?;
     println!("✓ 连接建立\n");
     
-    // 创建主布局
-    let layout = activity.create_linear_layout(None)?;
+    // 创建 NestedScrollView 作为根布局（支持滚动）
+    let scroll = activity.create_nested_scroll_view(None)?;
+    
+    // 创建主布局（放在 ScrollView 内）
+    let layout = activity.create_linear_layout(Some(scroll.id()))?;
+    layout.view().set_margin(&mut activity, 15)?;
     
     // 创建标题
     let title = activity.create_text_view("📊 进度条演示", Some(layout.id()))?;
