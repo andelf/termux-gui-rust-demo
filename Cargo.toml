@@ -10,7 +10,26 @@ documentation = "https://docs.rs/termux-gui"
 readme = "README.md"
 keywords = ["termux", "android", "gui", "ui", "mobile"]
 categories = ["api-bindings", "gui"]
-exclude = ["examples/*", "*.sh", "docs/*"]
+exclude = [
+    "examples/*",
+    "*.sh",
+    "AGENTS.md",
+    "CHANGELOG.md",
+    "COMPONENT_COMPARISON.md",
+    "DOC_IMPROVEMENT_EXAMPLE.md",
+    "HORIZONTAL_SCROLL_ISSUE.md",
+    "INTERNATIONALIZATION_STATUS.md",
+    "NEXT_ACTION.md",
+    "PROJECT_STRUCTURE.md",
+    "RELEASE_NOTES_v0.2.0.md",
+    "SPINNER_EVENT_HANDLING.md",
+    "SWIPE_REFRESH_LAYOUT_ISSUE.md",
+    "WEBVIEW_COLOR_FIX.md",
+    "WEBVIEW_COMPARISON.md",
+    "WEBVIEW_QUICK_REF.md",
+    "WEBVIEW_README.md",
+    "WEBVIEW_SETTINGS.md",
+]
 
 [lib]
 name = "termux_gui"
