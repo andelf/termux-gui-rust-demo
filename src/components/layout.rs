@@ -256,7 +256,7 @@ impl HorizontalScrollView {
             "aid": activity.id(),
             "nobar": false,
             "snapping": false,
-            "fillviewport": true  // 改为true，让子视图填充viewport
+            "fillviewport": true  // Set to true to allow child views to fill the viewport
         });
         
         // Only set parent if explicitly provided
