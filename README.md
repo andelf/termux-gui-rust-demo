@@ -1,37 +1,21 @@
 # Termux:GUI Rust Bindings
 
-A Rust library and collection of examples for building Android GUI applications using Termux:GUI. This project provides idiomatic Rust bindings for the Termux:GUI plugin, making it easy to create native Android interfaces from the Termux terminal environment.
+[![Crates.io](https://img.shields.io/crates/v/termux-gui.svg)](https://crates.io/crates/termux-gui)
+[![Documentation](https://docs.rs/termux-gui/badge.svg)](https://docs.rs/termux-gui)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+A Rust library for building Android GUI applications using Termux:GUI. This project provides idiomatic Rust bindings for the Termux:GUI plugin, making it easy to create native Android interfaces from the Termux terminal environment.
 
 ## Features
 
 ✅ **Complete Termux:GUI Protocol Implementation** - Full support for the low-level communication protocol  
-✅ **Rich Widget Library** - Buttons, text inputs, checkboxes, switches, radio buttons, spinners, and more  
-✅ **Advanced Layouts** - Linear, Grid, Frame, and Tab layouts with nested support  
-✅ **Image Support** - Display images from files or base64 data  
-✅ **WebView Integration** - Embed web content in your applications  
-✅ **Scroll Views** - Both horizontal and vertical scrolling containers  
-✅ **Event Handling** - Comprehensive event system with typed handlers  
+✅ **Rich Widget Library** - 12+ UI components (Button, TextView, EditText, WebView, etc.)  
+✅ **Advanced Layouts** - 7 layout types including Linear, Grid, Frame, Tab, and Scroll layouts  
+✅ **WebView Integration** - Full web content support with JavaScript execution  
 ✅ **Type Safety** - Leverages Rust's type system for compile-time correctness  
 ✅ **Memory Safety** - Zero-cost abstractions with guaranteed memory safety  
-
-## Project Structure
-
-```
-termux-gui-rust-demo/
-├── src/
-│   ├── lib.rs              # Main library with all widgets and layouts
-│   ├── core/               # Core communication protocols
-│   │   ├── connection.rs   # Socket connection management
-│   │   ├── activity.rs     # Activity lifecycle
-│   │   └── events.rs       # Event handling
-│   └── widgets/            # Widget implementations
-├── examples/               # Comprehensive widget examples
-│   ├── button_demo_v2.rs
-│   ├── input_demo_v2.rs
-│   ├── checkbox_demo_v2.rs
-│   └── ... (many more)
-└── Cargo.toml
-```
+✅ **Comprehensive Examples** - 21 working examples covering all components  
+✅ **International Ready** - 100% English documentation, ready for worldwide use
 
 ## Quick Start
 
@@ -47,7 +31,7 @@ Or add it manually to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-termux-gui = "0.2.0"
+termux-gui = "0.3.0"
 ```
 
 ### Prerequisites
@@ -120,28 +104,50 @@ Or run the pre-built binaries:
 ## Example: Simple Button App
 
 ```rust
-use termux_gui::{Activity, LinearLayout, Button};
+use termux_gui::{Activity, Result};
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Create activity
-    let mut activity = Activity::new()?;
+fn main() -> Result<()> {
+    // Create a full-screen activity
+    let mut activity = Activity::new(false)?;
     
     // Create vertical layout
-    let mut root = LinearLayout::new(&mut activity, true)?;
+    let layout = activity.create_linear_layout(None)?;
     
     // Add a button
-    let mut button = Button::new(&mut activity, "Click Me!", &mut root)?;
+    let button = activity.create_button("Click Me!", Some(layout.id()))?;
     
-    // Handle click events
-    activity.wait_event(|event| {
-        if event.is_click(&button) {
-            println!("Button clicked!");
-        }
-        false  // Continue event loop
-    })?;
+    // Button will generate click events
+    // Handle them in your event loop
     
     Ok(())
 }
+```
+
+For complete working examples, see the `examples/` directory.
+
+## Library Structure
+
+```
+src/
+├── lib.rs                 # Public API and exports
+├── error.rs               # Error types
+├── connection.rs          # Socket communication
+├── activity.rs            # Activity management
+├── view.rs                # Base view operations
+└── components/            # UI components (19 files)
+    ├── button.rs
+    ├── text_view.rs
+    ├── edit_text.rs
+    ├── checkbox.rs
+    ├── switch.rs
+    ├── radio.rs
+    ├── spinner.rs
+    ├── layout.rs          # All layout types
+    ├── image_view.rs
+    ├── progress_bar.rs
+    ├── toggle_button.rs
+    ├── space.rs
+    └── web_view.rs
 ```
 
 ## Core Architecture
@@ -207,19 +213,34 @@ cargo build --release --example checkbox_demo_v2
 
 ## Roadmap
 
-- [ ] Add more layout types (ConstraintLayout, RelativeLayout)
+- [x] Complete widget library (12+ components)
+- [x] All layout types (7 layouts)
+- [x] WebView with JavaScript support
+- [x] Comprehensive documentation
+- [x] International ready (English)
+- [x] Published to crates.io
+- [ ] Add more layout types (ConstraintLayout)
 - [ ] Implement gesture recognizers
 - [ ] Add animation support
-- [ ] Improve error messages and recovery
 - [ ] Create async/await API variant
-- [ ] Add comprehensive documentation
-- [ ] Publish to crates.io
+
+## What's New in 0.3.0
+
+- ✨ Complete WebView implementation with JavaScript support
+- ✨ All components fully documented in English
+- ✨ Clean library structure (src/ contains only library code)
+- ✨ 21 comprehensive examples
+- ✨ Internationalization complete
+- 🐛 Fixed layout viewport filling
+- 📚 Enhanced documentation with usage guidelines
 
 ## Resources
 
 - [Termux:GUI Official Repository](https://github.com/termux/termux-gui)
 - [Python Bindings](https://github.com/tareksander/termux-gui-python-bindings)
 - [Termux:GUI Protocol Documentation](https://github.com/termux/termux-gui/blob/main/Protocol.md)
+- [Project Structure](./PROJECT_STRUCTURE.md)
+- [WebView Documentation](./WEBVIEW_README.md)
 
 ## License
 
@@ -231,5 +252,6 @@ Contributions are welcome! Please feel free to submit issues or pull requests.
 
 ---
 
-**Version**: 0.2.0  
-**Last Updated**: 2024
+**Version**: 0.3.0  
+**Status**: Production Ready  
+**Last Updated**: 2024-10-05

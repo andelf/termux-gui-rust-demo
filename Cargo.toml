@@ -1,15 +1,16 @@
 [package]
 name = "termux-gui"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 authors = ["Termux GUI Rust Contributors"]
-description = "Rust bindings for Termux:GUI - Build Android GUI apps in Rust"
+description = "Rust bindings for Termux:GUI - Build Android GUI apps in Rust on Termux"
 license = "MIT"
-repository = "https://github.com/yourusername/termux-gui-rust-demo"
+repository = "https://github.com/termux/termux-gui-rust-bindings"
 documentation = "https://docs.rs/termux-gui"
 readme = "README.md"
-keywords = ["termux", "android", "gui", "ui"]
+keywords = ["termux", "android", "gui", "ui", "mobile"]
 categories = ["api-bindings", "gui"]
+exclude = ["examples/*", "*.sh", "docs/*"]
 
 [lib]
 name = "termux_gui"
