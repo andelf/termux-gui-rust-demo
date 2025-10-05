@@ -118,3 +118,23 @@ path = "examples/tab_layout_demo_v2.rs"
 name = "webview_demo_v2"
 path = "examples/webview_demo_v2.rs"
 
+[[example]]
+name = "low_level_protocol_demo"
+path = "examples/low_level_protocol_demo.rs"
+
+[[example]]
+name = "enhanced_features_demo"
+path = "examples/enhanced_features_demo.rs"
+
+[[example]]
+name = "fullscreen_webview"
+path = "examples/fullscreen_webview.rs"
+
+[[example]]
+name = "webview_config_demo"
+path = "examples/webview_config_demo.rs"
+
+[[example]]
+name = "webview_simple"
+path = "examples/webview_simple.rs"
+
